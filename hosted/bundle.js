@@ -143,7 +143,7 @@ var DomoList = function DomoList(props) {
       className: "domo",
       key: domo._id
     }, /*#__PURE__*/React.createElement("img", {
-      src: "/assets/img/domoface.jpeg",
+      src: "/assets/img/eyecon1x.png",
       alt: "domo face",
       className: "domoFace"
     }), /*#__PURE__*/React.createElement("h3", {
@@ -192,15 +192,82 @@ $(document).ready(function () {
 });
 "use strict";
 
+//adapted from: https://stackoverflow.com/questions/39778797/react-editable-table
+var onCellChange = function onCellChange(row, column) {//update the cell with this.setState() method
+};
+
+var DataTable = function DataTable(props) {
+  if (props.columns.length === 0) {
+    return /*#__PURE__*/React.createElement("table", {
+      className: "dataTable"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "emptyTable"
+    }, "No Data Yet"));
+  }
+
+  console.log(props.columns);
+  console.log(props.data);
+  var headers = props.columns.map(function (header) {
+    return /*#__PURE__*/React.createElement("th", {
+      key: header._id
+    }, header);
+  });
+  return /*#__PURE__*/React.createElement("table", {
+    className: "dataTable"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, "Header 1"), /*#__PURE__*/React.createElement("tr", null, "Header 2"), /*#__PURE__*/React.createElement("tr", null, "Header 3"), /*#__PURE__*/React.createElement("tr", null, "Header 4"), /*#__PURE__*/React.createElement("tr", null, "Header 5")), /*#__PURE__*/React.createElement("tbody", null, props.data.map(function (row, index) {
+    return /*#__PURE__*/React.createElement("tr", {
+      key: index
+    }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      className: "form-control",
+      value: row[0],
+      onChange: function onChange() {
+        return onCellChange(index, 0);
+      }
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "number",
+      className: "form-control",
+      step: "1",
+      min: "1",
+      value: row[1],
+      onChange: function onChange() {
+        return onCellChange(index, 1);
+      }
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      className: "form-control",
+      value: row[1],
+      onChange: function onChange() {
+        return onCellChange(index, 2);
+      }
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      className: "form-control",
+      value: row[2],
+      onChange: function onChange() {
+        return onCellChange(index, 3);
+      }
+    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      className: "form-control",
+      value: row[3],
+      onChange: function onChange() {
+        return onCellChange(index, 4);
+      }
+    })));
+  })));
+};
+"use strict";
+
 var handleError = function handleError(message) {
   $("#errorMessage").text(message);
-  $("#domoMessage").animate({
+  $("#messageBox").animate({
     width: 'toggle'
   }, 350);
 };
 
 var redirect = function redirect(res) {
-  $("#domoMessage").animate({
+  $("#messageBox").animate({
     width: 'hide'
   }, 350);
   window.location = res.redirect;
@@ -223,17 +290,17 @@ var sendAjax = function sendAjax(type, action, data, success) {
 
 var handleSignup = function handleSignup(e) {
   e.preventDefault();
-  $("#domoMessage").animate({
+  $("#messageBox").animate({
     width: 'hide'
   }, 350);
 
   if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-    handleError("RAWR! All fields are required");
+    handleError("Error: All fields are required");
     return false;
   }
 
   if ($("#pass").val() !== $("#pass2").val()) {
-    handleError("RAWR! Passwords do not match");
+    handleError("Error: Passwords do not match");
     return false;
   }
 
@@ -243,12 +310,12 @@ var handleSignup = function handleSignup(e) {
 
 var handleLogin = function handleLogin(e) {
   e.preventDefault();
-  $("#domoMessage").animate({
+  $("#messageBox").animate({
     width: 'hide'
   }, 350);
 
   if ($("#user").val() == '' || $("#pass").val() == '') {
-    handleError("RAWR! Username or password is empty");
+    handleError("Error: Username or password is empty");
     return false;
   }
 
