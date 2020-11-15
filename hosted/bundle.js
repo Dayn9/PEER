@@ -79,7 +79,7 @@ var handleDomo = function handleDomo(e) {
   }, 350);
 
   if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoFriends").val() == '') {
-    handleError("RAWR! All fields are required");
+    handleError("Error: All fields are required");
     return false;
   }
 
@@ -129,55 +129,22 @@ var DomoForm = function DomoForm(props) {
   }));
 };
 
-var DomoList = function DomoList(props) {
-  if (props.domos.length === 0) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "domoList"
-    }, /*#__PURE__*/React.createElement("h3", {
-      className: "emptyDomo"
-    }, "No Domos Yet"));
-  }
-
-  var domoNodes = props.domos.map(function (domo) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "domo",
-      key: domo._id
-    }, /*#__PURE__*/React.createElement("img", {
-      src: "/assets/img/eyecon1x.png",
-      alt: "domo face",
-      className: "domoFace"
-    }), /*#__PURE__*/React.createElement("h3", {
-      className: "domoName"
-    }, "Name: ", domo.name, " "), /*#__PURE__*/React.createElement("h3", {
-      className: "domoAge"
-    }, "Age: ", domo.age, " "), /*#__PURE__*/React.createElement("h3", {
-      className: "domoAge"
-    }, "Friends: ", domo.friends, " "));
-  });
-  return /*#__PURE__*/React.createElement("div", {
-    className: "domoList"
-  }, domoNodes);
-};
-
 var loadDomosFromServer = function loadDomosFromServer() {
   sendAjax('GET', '/getDomos', null, function (data) {
-    ReactDOM.render( /*#__PURE__*/React.createElement(DomoList, {
-      domos: data.domos
-    }), document.querySelector("#domos"));
     ReactDOM.render( /*#__PURE__*/React.createElement(DomoChart, {
       domos: data.domos
     }), document.querySelector("#domoChartOptions"));
+    ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
+      headers: ['name', 'age', 'friends'],
+      data: data.domos
+    }), document.querySelector("#tableSection"));
   });
 };
 
 var setup = function setup(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(DomoForm, {
     csrf: csrf
-  }), document.querySelector("#makeDomo")); //create initial empty ist
-
-  ReactDOM.render( /*#__PURE__*/React.createElement(DomoList, {
-    domos: []
-  }), document.querySelector("#domos"));
+  }), document.querySelector("#makeDomo"));
   loadDomosFromServer();
 };
 
@@ -197,7 +164,7 @@ var onCellChange = function onCellChange(row, column) {//update the cell with th
 };
 
 var DataTable = function DataTable(props) {
-  if (props.columns.length === 0) {
+  if (props.headers.length === 0) {
     return /*#__PURE__*/React.createElement("table", {
       className: "dataTable"
     }, /*#__PURE__*/React.createElement("h3", {
@@ -205,54 +172,41 @@ var DataTable = function DataTable(props) {
     }, "No Data Yet"));
   }
 
-  console.log(props.columns);
-  console.log(props.data);
-  var headers = props.columns.map(function (header) {
-    return /*#__PURE__*/React.createElement("th", {
-      key: header._id
-    }, header);
-  });
   return /*#__PURE__*/React.createElement("table", {
     className: "dataTable"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, "Header 1"), /*#__PURE__*/React.createElement("tr", null, "Header 2"), /*#__PURE__*/React.createElement("tr", null, "Header 3"), /*#__PURE__*/React.createElement("tr", null, "Header 4"), /*#__PURE__*/React.createElement("tr", null, "Header 5")), /*#__PURE__*/React.createElement("tbody", null, props.data.map(function (row, index) {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, //create the data table headers
+  props.headers.map(function (header) {
+    return /*#__PURE__*/React.createElement("th", {
+      key: header
+    }, header);
+  }))), /*#__PURE__*/React.createElement("tbody", null, //create each of the data table rows
+  props.data.map(function (row, rowIndex) {
     return /*#__PURE__*/React.createElement("tr", {
-      key: index
+      key: rowIndex
     }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
       type: "text",
       className: "form-control",
-      value: row[0],
+      value: row[props.headers[0]],
       onChange: function onChange() {
-        return onCellChange(index, 0);
+        return onCellChange(rowIndex, 0);
       }
     })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
       type: "number",
       className: "form-control",
       step: "1",
       min: "1",
-      value: row[1],
+      value: row[props.headers[1]],
       onChange: function onChange() {
-        return onCellChange(index, 1);
+        return onCellChange(rowIndex, 1);
       }
     })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "text",
+      type: "number",
       className: "form-control",
-      value: row[1],
+      step: "1",
+      min: "1",
+      value: row[props.headers[2]],
       onChange: function onChange() {
-        return onCellChange(index, 2);
-      }
-    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "form-control",
-      value: row[2],
-      onChange: function onChange() {
-        return onCellChange(index, 3);
-      }
-    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "form-control",
-      value: row[3],
-      onChange: function onChange() {
-        return onCellChange(index, 4);
+        return onCellChange(rowIndex, 2);
       }
     })));
   })));

@@ -5,7 +5,7 @@ const handleDomo = (e) => {
     $("#domoMessage").animate({width:'hide'},350);
 
     if($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoFriends").val() == '') {
-      handleError("RAWR! All fields are required");
+      handleError("Error: All fields are required");
       return false;
     }
 
@@ -37,45 +37,18 @@ const DomoForm = (props) => {
     );
   };
 
-const DomoList =(props) => {
-    if(props.domos.length === 0){
-        return (
-            <div className = "domoList">
-                <h3 className = "emptyDomo">No Domos Yet</h3>
-            </div>
-        );
-    }
-
-    const domoNodes = props.domos.map((domo) => {
-        return (
-            <div className = "domo" key = {domo._id}>
-                <img src = "/assets/img/eyecon1x.png" alt = "domo face" className="domoFace"/>
-                <h3 className = "domoName">Name: {domo.name} </h3>
-                <h3 className = "domoAge">Age: {domo.age} </h3>
-                <h3 className = "domoAge">Friends: {domo.friends} </h3>
-            </div>
-        );
-    })
-
-    return(
-        <div className = "domoList">
-            {domoNodes}
-        </div>
-    );
-}
 
 const loadDomosFromServer = () => {
     sendAjax('GET', '/getDomos', null, (data) => {
-        ReactDOM.render(
-            <DomoList domos={data.domos} />, 
-            document.querySelector("#domos")
-        );
-
         ReactDOM.render(
             <DomoChart domos={data.domos} />, 
             document.querySelector("#domoChartOptions")
         );
 
+        ReactDOM.render(
+            <DataTable headers = {['name', 'age', 'friends']} data = {data.domos} />,
+            document.querySelector("#tableSection")
+        )
     });
 }
 
@@ -83,12 +56,6 @@ const setup = (csrf) => {
     ReactDOM.render(
         <DomoForm csrf={csrf} />, 
         document.querySelector("#makeDomo")
-    );
-
-    //create initial empty ist
-    ReactDOM.render(
-        <DomoList domos={[]} />, 
-        document.querySelector("#domos")
     );
 
     loadDomosFromServer();
