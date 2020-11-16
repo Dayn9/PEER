@@ -84,7 +84,7 @@ var handleData = function handleData(e) {
   }
 
   sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), function () {
-    loadDomosFromServer();
+    loadDataFromServer();
   });
   return false;
 };
@@ -129,7 +129,7 @@ var DataForm = function DataForm(props) {
   }));
 };
 
-var loadDomosFromServer = function loadDomosFromServer() {
+var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getData', null, function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(DataChart, {
       domos: data.data
@@ -138,6 +138,10 @@ var loadDomosFromServer = function loadDomosFromServer() {
       headers: ['name', 'age', 'friends'],
       data: data.data
     }), document.querySelector("#tableSection"));
+  }); //test descriptive 
+
+  sendAjax('GET', '/getDescriptive', 'param=age', function (data) {
+    console.log(data);
   });
 };
 
@@ -145,7 +149,7 @@ var setup = function setup(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(DataForm, {
     csrf: csrf
   }), document.querySelector("#addData"));
-  loadDomosFromServer();
+  loadDataFromServer();
 };
 
 var getToken = function getToken() {

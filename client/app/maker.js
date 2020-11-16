@@ -10,7 +10,7 @@ const handleData = (e) => {
     }
 
     sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), () => {
-        loadDomosFromServer();
+        loadDataFromServer();
     });
 
     return false;
@@ -38,7 +38,7 @@ const DataForm = (props) => {
   };
 
 
-const loadDomosFromServer = () => {
+const loadDataFromServer = () => {
     sendAjax('GET', '/getData', null, (data) => {
         ReactDOM.render(
             <DataChart domos={data.data} />, 
@@ -50,6 +50,12 @@ const loadDomosFromServer = () => {
             document.querySelector("#tableSection")
         )
     });
+
+    //test descriptive 
+    sendAjax('GET', '/getDescriptive', 'param=age', (data) => {
+      
+      console.log(data);
+    })
 }
 
 const setup = (csrf) => {
@@ -58,7 +64,7 @@ const setup = (csrf) => {
         document.querySelector("#addData")
     );
 
-    loadDomosFromServer();
+    loadDataFromServer();
 }
 
 const getToken = () => {
