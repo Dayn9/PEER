@@ -129,6 +129,12 @@ var DataForm = function DataForm(props) {
   }));
 };
 
+var Descriptives = function Descriptives(props) {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "desc"
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for Age"), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+};
+
 var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getData', null, function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(DataChart, {
@@ -142,6 +148,12 @@ var loadDataFromServer = function loadDataFromServer() {
 
   sendAjax('GET', '/getDescriptive', 'param=age', function (data) {
     console.log(data);
+    ReactDOM.render( /*#__PURE__*/React.createElement(Descriptives, {
+      mean: data.mean,
+      median: data.median,
+      mode: data.mode,
+      range: data.range
+    }), document.querySelector("#descriptives"));
   });
 };
 

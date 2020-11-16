@@ -37,6 +37,19 @@ const DataForm = (props) => {
     );
   };
 
+  const Descriptives = (props) => {
+    return(
+      <div id="desc">
+        <h3>Descriptive Statistics for Age</h3>
+        <p>Mean: {props.mean}</p>
+        <p>Median: {props.median}</p>
+        <p>Mode: {props.mode}</p>
+        <p>Range: {props.range[0]} - {props.range[1]}</p>
+      </div>
+    );
+  };
+
+
 
 const loadDataFromServer = () => {
     sendAjax('GET', '/getData', null, (data) => {
@@ -48,13 +61,16 @@ const loadDataFromServer = () => {
         ReactDOM.render(
             <DataTable headers = {['name', 'age', 'friends']} data = {data.data} />,
             document.querySelector("#tableSection")
-        )
+        );
     });
 
     //test descriptive 
     sendAjax('GET', '/getDescriptive', 'param=age', (data) => {
-      
       console.log(data);
+      ReactDOM.render(
+        <Descriptives mean = {data.mean} median = {data.median} mode = {data.mode} range = {data.range} />,
+        document.querySelector("#descriptives")
+      );
     })
 }
 

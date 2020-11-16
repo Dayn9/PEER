@@ -172,7 +172,7 @@ nav:nth-child(1) {
     font-style: italic;
 }
 
-#dataChart {
+#dataChart, #descriptives {
     text-align: center;
     width: 500px;
     border: 2px solid #55acee;

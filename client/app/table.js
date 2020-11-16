@@ -34,7 +34,6 @@ const DataTable =(props) => {
                             <td><input type='text' className='form-control' value={row[props.headers[0]]} onChange={() => onCellChange(rowIndex, 0)}/></td>
                             <td><input type='number' className='form-control' step='1' min="1" value={row[props.headers[1]]} onChange={() => onCellChange(rowIndex, 1)}/></td>
                             <td><input type='number' className='form-control' step='1' min="1" value={row[props.headers[2]]} onChange={() => onCellChange(rowIndex, 2)}/></td>
-                        
                         </tr>
                     );
                 })
