@@ -1,52 +1,52 @@
 
-const handleDomo = (e) => {
+const handleData = (e) => {
     e.preventDefault();
 
-    $("#domoMessage").animate({width:'hide'},350);
+    $("#messageBox").animate({width:'hide'},350);
 
-    if($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoFriends").val() == '') {
+    if($("#dataName").val() == '' || $("#dataAge").val() == '' || $("#dataFriends").val() == '') {
       handleError("Error: All fields are required");
       return false;
     }
 
-    sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), () => {
+    sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), () => {
         loadDomosFromServer();
     });
 
     return false;
 }
 
-const DomoForm = (props) => {
+const DataForm = (props) => {
     return(
-      <form id="domoForm" 
-          name="domoForm" 
-          onSubmit={handleDomo}
+      <form id="dataForm" 
+          name="dataForm" 
+          onSubmit={handleData}
           action="/maker" 
           method="POST" 
-          className="domoForm"
+          className="dataForm"
       >
         <label htmlFor="name">Name: </label>
-        <input id="domoName" type="text" name="name" placeholder="Domo Name"/>
+        <input id="dataName" type="text" name="name" placeholder="Name"/>
         <label htmlFor="age">Age: </label>
-        <input id="domoAge" type="text" name="age" placeholder="Domo Age"/>
+        <input id="dataAge" type="text" name="age" placeholder="Age"/>
         <label htmlFor="friends">Friends: </label>
-        <input id="domoFriends" type="text" name="friends" placeholder="Domo # of Friends"/>
+        <input id="dataFriends" type="text" name="friends" placeholder="Friends"/>
         <input type="hidden" name="_csrf" value={props.csrf} />
-        <input className="makeDomoSubmit" type="submit" value="Make Domo" />
+        <input className="addDataSubmit" type="submit" value="Add Data" />
       </form>
     );
   };
 
 
 const loadDomosFromServer = () => {
-    sendAjax('GET', '/getDomos', null, (data) => {
+    sendAjax('GET', '/getData', null, (data) => {
         ReactDOM.render(
-            <DomoChart domos={data.domos} />, 
-            document.querySelector("#domoChartOptions")
+            <DataChart domos={data.data} />, 
+            document.querySelector("#dataChartOptions")
         );
 
         ReactDOM.render(
-            <DataTable headers = {['name', 'age', 'friends']} data = {data.domos} />,
+            <DataTable headers = {['name', 'age', 'friends']} data = {data.data} />,
             document.querySelector("#tableSection")
         )
     });
@@ -54,8 +54,8 @@ const loadDomosFromServer = () => {
 
 const setup = (csrf) => {
     ReactDOM.render(
-        <DomoForm csrf={csrf} />, 
-        document.querySelector("#makeDomo")
+        <DataForm csrf={csrf} />, 
+        document.querySelector("#addData")
     );
 
     loadDomosFromServer();

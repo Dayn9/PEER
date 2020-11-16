@@ -24,7 +24,7 @@ const yAxis = svg.append("g")
 
 let chartProperty = 'age';
 
-const DomoChart = (props) => {
+const DataChart = (props) => {
 
     const data = props.domos;
 

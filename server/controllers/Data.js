@@ -1,9 +1,9 @@
 const models = require('../models');
 
-const { Domo } = models;
+const { Data } = models;
 
 const makerPage = (req, res) => {
-  Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+  Data.DataModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
@@ -21,39 +21,39 @@ const make = (req, res) => {
     return res.status(400).json({ error: 'Both name and age are required' });
   }
 
-  const domoData = {
+  const newDataObj = {
     name: req.body.name,
     age: req.body.age,
     friends: req.body.friends,
     owner: req.session.account._id,
   };
 
-  const newDomo = new Domo.DomoModel(domoData);
-  const domoPromise = newDomo.save();
+  const newData = new Data.DataModel(newDataObj);
+  const dataPromise = newData.save();
 
-  domoPromise.then(() => res.json({ redirect: '/maker' }));
-  domoPromise.catch((err) => {
+  dataPromise.then(() => res.json({ redirect: '/maker' }));
+  dataPromise.catch((err) => {
     console.log(err);
     if (err.code === 11000) {
-      return res.status(400).json({ error: 'Domo already exists' });
+      return res.status(400).json({ error: 'Data already exists' });
     }
     return res.status(400).json({ error: 'An error occurred' });
   });
 
-  return domoPromise;
+  return dataPromise;
 };
 
-const getDomos = (req, res) => Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+const getData = (req, res) => Data.DataModel.findByOwner(req.session.account._id, (err, docs) => {
   if (err) {
     console.log(err);
     return res.status(400).json({ error: 'An error occurred' });
   }
 
-  return res.json({ domos: docs });
+  return res.json({ data: docs });
 });
 
 module.exports = {
   makerPage,
   make,
-  getDomos,
+  getData,
 };

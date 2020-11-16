@@ -3,12 +3,12 @@ const _ = require('underscore');
 
 mongoose.Promise = global.Promise;
 
-let DomoModel = {};
+let DataModel = {};
 
 const convertId = mongoose.Types.ObjectId;
 const setName = (name) => _.escape(name).trim();
 
-const DomoSchema = new mongoose.Schema({
+const DataSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -36,21 +36,21 @@ const DomoSchema = new mongoose.Schema({
   },
 });
 
-DomoSchema.statics.toAPI = (doc) => ({
+DataSchema.statics.toAPI = (doc) => ({
   name: doc.username,
   age: doc.age,
   friends: doc.friends,
 });
 
-DomoSchema.statics.findByOwner = (ownerId, callback) => {
+DataSchema.statics.findByOwner = (ownerId, callback) => {
   const search = {
     owner: convertId(ownerId),
   };
 
-  return DomoModel.find(search).select('name age friends').lean().exec(callback);
+  return DataModel.find(search).select('name age friends').lean().exec(callback);
 };
 
-DomoModel = mongoose.model('Domo', DomoSchema);
+DataModel = mongoose.model('Data', DataSchema);
 
-module.exports.DomoModel = DomoModel;
-module.exports.DomoSchema = DomoSchema;
+module.exports.DataModel = DataModel;
+module.exports.DataSchema = DataSchema;

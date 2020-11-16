@@ -19,7 +19,7 @@ var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - mar
 var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)"));
 var chartProperty = 'age';
 
-var DomoChart = function DomoChart(props) {
+var DataChart = function DataChart(props) {
   var data = props.domos;
 
   var drawChart = function drawChart(property) {
@@ -72,79 +72,79 @@ var DomoChart = function DomoChart(props) {
 };
 "use strict";
 
-var handleDomo = function handleDomo(e) {
+var handleData = function handleData(e) {
   e.preventDefault();
-  $("#domoMessage").animate({
+  $("#messageBox").animate({
     width: 'hide'
   }, 350);
 
-  if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoFriends").val() == '') {
+  if ($("#dataName").val() == '' || $("#dataAge").val() == '' || $("#dataFriends").val() == '') {
     handleError("Error: All fields are required");
     return false;
   }
 
-  sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
+  sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), function () {
     loadDomosFromServer();
   });
   return false;
 };
 
-var DomoForm = function DomoForm(props) {
+var DataForm = function DataForm(props) {
   return /*#__PURE__*/React.createElement("form", {
-    id: "domoForm",
-    name: "domoForm",
-    onSubmit: handleDomo,
+    id: "dataForm",
+    name: "dataForm",
+    onSubmit: handleData,
     action: "/maker",
     method: "POST",
-    className: "domoForm"
+    className: "dataForm"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "name"
   }, "Name: "), /*#__PURE__*/React.createElement("input", {
-    id: "domoName",
+    id: "dataName",
     type: "text",
     name: "name",
-    placeholder: "Domo Name"
+    placeholder: "Name"
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "age"
   }, "Age: "), /*#__PURE__*/React.createElement("input", {
-    id: "domoAge",
+    id: "dataAge",
     type: "text",
     name: "age",
-    placeholder: "Domo Age"
+    placeholder: "Age"
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "friends"
   }, "Friends: "), /*#__PURE__*/React.createElement("input", {
-    id: "domoFriends",
+    id: "dataFriends",
     type: "text",
     name: "friends",
-    placeholder: "Domo # of Friends"
+    placeholder: "Friends"
   }), /*#__PURE__*/React.createElement("input", {
     type: "hidden",
     name: "_csrf",
     value: props.csrf
   }), /*#__PURE__*/React.createElement("input", {
-    className: "makeDomoSubmit",
+    className: "addDataSubmit",
     type: "submit",
-    value: "Make Domo"
+    value: "Add Data"
   }));
 };
 
 var loadDomosFromServer = function loadDomosFromServer() {
-  sendAjax('GET', '/getDomos', null, function (data) {
-    ReactDOM.render( /*#__PURE__*/React.createElement(DomoChart, {
-      domos: data.domos
-    }), document.querySelector("#domoChartOptions"));
+  sendAjax('GET', '/getData', null, function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(DataChart, {
+      domos: data.data
+    }), document.querySelector("#dataChartOptions"));
     ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
       headers: ['name', 'age', 'friends'],
-      data: data.domos
+      data: data.data
     }), document.querySelector("#tableSection"));
   });
 };
 
 var setup = function setup(csrf) {
-  ReactDOM.render( /*#__PURE__*/React.createElement(DomoForm, {
+  ReactDOM.render( /*#__PURE__*/React.createElement(DataForm, {
     csrf: csrf
-  }), document.querySelector("#makeDomo"));
+  }), document.querySelector("#addData"));
   loadDomosFromServer();
 };
 
