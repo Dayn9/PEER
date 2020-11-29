@@ -35,7 +35,6 @@ TableSchema.statics.findByOwner = (ownerId, callback) => {
   return TableModel.find(search).exec(callback);
 };
 
-
 TableModel = mongoose.model('Table', TableSchema);
 
 const DataSchema = new mongoose.Schema({
@@ -82,7 +81,7 @@ DataSchema.statics.findByOwner = (ownerId, callback) => {
 
 DataModel = mongoose.model('Data', DataSchema);
 
-//module.exports.DataModel = DataModel;
-//module.exports.DataSchema = DataSchema;
+// module.exports.DataModel = DataModel;
+// module.exports.DataSchema = DataSchema;
 module.exports.TableModel = TableModel;
 module.exports.TableSchema = TableSchema;

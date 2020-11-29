@@ -178,7 +178,7 @@ var RetrieveForm = function RetrieveForm(props) {
 };
 
 var loadDataFromServer = function loadDataFromServer() {
-  sendAjax('GET', '/getData', null, function (data) {
+  sendAjax('GET', '/getRecentData', null, function (data) {
     console.log(data);
     /*
     ReactDOM.render(

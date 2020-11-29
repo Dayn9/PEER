@@ -43,28 +43,33 @@ const make = (req, res) => {
   return dataPromise;
 };
 
-//get all the uploads associated with this user
-const getData = (req, res) => Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
-  if (err) {
-    console.log(err);
-    return res.status(400).json({ error: 'An error occurred' });
-  }
+// get all the uploads associated with this user
+const getData = (req, res) => {
+  Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
 
-  return res.json({ data: docs });
-});
+    return res.json({ data: docs });
+  });
+};
 
-//get the most recent upload
-const getRecentData = (req, res) => Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
-  if (err) {
-    console.log(err);
-    return res.status(400).json({ error: 'An error occurred' });
-  }
+// get the most recent upload
+const getRecentData = (req, res) => {
+  Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
 
-  return res.json({ data: [docs[docs.length-1]] });
-});
+    return res.json({ data: [docs[docs.length - 1]] });
+  });
+};
 
 module.exports = {
   makerPage,
   make,
-  getData: getRecentData,
+  getData,
+  getRecentData,
 };

@@ -81,7 +81,7 @@ const RetrieveForm = (props) => {
 };
 
 const loadDataFromServer = () => {
-    sendAjax('GET', '/getData', null, (data) => {
+    sendAjax('GET', '/getRecentData', null, (data) => {
 
         console.log(data);
         
