@@ -72,11 +72,172 @@ var DataChart = function DataChart(props) {
 };
 "use strict";
 
+var handleData = function handleData(e) {
+  e.preventDefault();
+  $("#messageBox").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#dataName").val() == '' || $("#dataAge").val() == '' || $("#dataFriends").val() == '') {
+    handleError("Error: All fields are required");
+    return false;
+  }
+
+  sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), function () {
+    loadDataFromServer();
+  });
+  return false;
+};
+
+var DataForm = function DataForm(props) {
+  return /*#__PURE__*/React.createElement("form", {
+    id: "dataForm",
+    name: "dataForm",
+    onSubmit: handleData,
+    action: "/maker",
+    method: "POST",
+    className: "dataForm"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "name"
+  }, "Name: "), /*#__PURE__*/React.createElement("input", {
+    id: "dataName",
+    type: "text",
+    name: "name",
+    placeholder: "Name"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "age"
+  }, "Age: "), /*#__PURE__*/React.createElement("input", {
+    id: "dataAge",
+    type: "text",
+    name: "age",
+    placeholder: "Age"
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "friends"
+  }, "Friends: "), /*#__PURE__*/React.createElement("input", {
+    id: "dataFriends",
+    type: "text",
+    name: "friends",
+    placeholder: "Friends"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    className: "addDataSubmit",
+    type: "submit",
+    value: "Add Data"
+  }));
+};
+
+var Descriptives = function Descriptives(props) {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "desc"
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for Age"), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+};
+
+var UploadForm = function UploadForm(props) {
+  return /*#__PURE__*/React.createElement("form", {
+    //ref='uploadForm' 
+    id: "uploadForm",
+    action: "/upload",
+    method: "POST",
+    encType: "multipart/form-data"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    name: "sampleFile"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "submit",
+    value: "Upload!"
+  }));
+}; //MAY BE USED LATER FOR DOWNLOAD CSV FEATURE
+
+
+var RetrieveForm = function RetrieveForm(props) {
+  return /*#__PURE__*/React.createElement("form", {
+    ref: "retrieveForm",
+    id: "retrieveForm",
+    action: "/retrieve",
+    method: "get"
+  }, /*#__PURE__*/React.createElement("label", {
+    "for": "fileName"
+  }, "Retrieve File By Name: "), /*#__PURE__*/React.createElement("input", {
+    name: "fileName",
+    type: "text"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    name: "_csrf",
+    value: props.csrf
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "submit",
+    value: "Download!"
+  }));
+};
+
+var loadDataFromServer = function loadDataFromServer() {
+  sendAjax('GET', '/getData', null, function (data) {
+    console.log(data);
+    /*
+    ReactDOM.render(
+        <DataChart domos={data.data} />, 
+        document.querySelector("#dataChartOptions")
+    );*/
+
+    ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
+      headers: data.data[0].headers,
+      data: data.data[0].data
+    }), document.querySelector("#tableSection"));
+  });
+};
+
+var loadDescriptive = function loadDescriptive() {
+  //test descriptive 
+  sendAjax('GET', '/getDescriptive', 'param=age', function (data) {
+    console.log(data);
+    ReactDOM.render( /*#__PURE__*/React.createElement(Descriptives, {
+      mean: data.mean,
+      median: data.median,
+      mode: data.mode,
+      range: data.range
+    }), document.querySelector("#descriptives"));
+  });
+};
+
+var setup = function setup(csrf) {
+  ReactDOM.render( /*#__PURE__*/React.createElement(DataForm, {
+    csrf: csrf
+  }), document.querySelector("#addData"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(UploadForm, {
+    csrf: csrf
+  }), document.querySelector("#uploadSection"));
+  loadDataFromServer();
+};
+
+var getToken = function getToken() {
+  sendAjax('GET', '/getToken', null, function (result) {
+    setup(result.csrfToken);
+  });
+};
+
+$(document).ready(function () {
+  getToken();
+});
+"use strict";
+
 //adapted from: https://stackoverflow.com/questions/39778797/react-editable-table
 var onCellChange = function onCellChange(row, column) {//update the cell with this.setState() method
 };
 
+var DataTableRowArray = function DataTableRowArray(row, headers) {
+  var arr = [];
+};
+
 var DataTable = function DataTable(props) {
+  console.log(props);
+
   if (props.headers.length === 0) {
     return /*#__PURE__*/React.createElement("table", {
       className: "dataTable"
@@ -92,36 +253,23 @@ var DataTable = function DataTable(props) {
     return /*#__PURE__*/React.createElement("th", {
       key: header
     }, header);
-  }))), /*#__PURE__*/React.createElement("tbody", null, //create each of the data table rows
+  }))), /*#__PURE__*/React.createElement("tbody", null, //create data rows 
   props.data.map(function (row, rowIndex) {
     return /*#__PURE__*/React.createElement("tr", {
       key: rowIndex
-    }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "form-control",
-      value: row[props.headers[0]],
-      onChange: function onChange() {
-        return onCellChange(rowIndex, 0);
-      }
-    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "form-control",
-      step: "1",
-      min: "1",
-      value: row[props.headers[1]],
-      onChange: function onChange() {
-        return onCellChange(rowIndex, 1);
-      }
-    })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "form-control",
-      step: "1",
-      min: "1",
-      value: row[props.headers[2]],
-      onChange: function onChange() {
-        return onCellChange(rowIndex, 2);
-      }
-    })));
+    }, //create data point by looping over headers in row
+    props.headers.map(function (header, colIndex) {
+      return /*#__PURE__*/React.createElement("td", {
+        key: colIndex
+      }, /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        className: "form-control",
+        value: row[header],
+        onChange: function onChange() {
+          return onCellChange(rowIndex, colIndex);
+        }
+      }));
+    }));
   })));
 };
 "use strict";

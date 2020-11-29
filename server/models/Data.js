@@ -18,8 +18,23 @@ const TableSchema = new mongoose.Schema({
   data: {
     type: Object,
     required: true,
-  }
+  },
+
+  owner: {
+    type: mongoose.Schema.ObjectId,
+    required: true,
+    ref: 'Account',
+  },
 });
+
+TableSchema.statics.findByOwner = (ownerId, callback) => {
+  const search = {
+    owner: convertId(ownerId),
+  };
+
+  return TableModel.find(search).exec(callback);
+};
+
 
 TableModel = mongoose.model('Table', TableSchema);
 
@@ -67,7 +82,7 @@ DataSchema.statics.findByOwner = (ownerId, callback) => {
 
 DataModel = mongoose.model('Data', DataSchema);
 
-module.exports.DataModel = DataModel;
-module.exports.DataSchema = DataSchema;
+//module.exports.DataModel = DataModel;
+//module.exports.DataSchema = DataSchema;
 module.exports.TableModel = TableModel;
 module.exports.TableSchema = TableSchema;

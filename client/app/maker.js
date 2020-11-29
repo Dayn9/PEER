@@ -16,8 +16,6 @@ const handleData = (e) => {
     return false;
 }
 
-const 
-
 const DataForm = (props) => {
     return(
       <form id="dataForm" 
@@ -66,6 +64,7 @@ const UploadForm = (props) => {
   );
 };
 
+//MAY BE USED LATER FOR DOWNLOAD CSV FEATURE
 const RetrieveForm = (props) => {
   return(
       <form ref='retrieveForm' 
@@ -83,25 +82,31 @@ const RetrieveForm = (props) => {
 
 const loadDataFromServer = () => {
     sendAjax('GET', '/getData', null, (data) => {
+
+        console.log(data);
+        
+        /*
         ReactDOM.render(
             <DataChart domos={data.data} />, 
             document.querySelector("#dataChartOptions")
-        );
+        );*/
 
         ReactDOM.render(
-            <DataTable headers = {['name', 'age', 'friends']} data = {data.data} />,
+            <DataTable headers = {data.data[0].headers} data = {data.data[0].data} />,
             document.querySelector("#tableSection")
         );
     });
+}
 
-    //test descriptive 
-    sendAjax('GET', '/getDescriptive', 'param=age', (data) => {
-      console.log(data);
-      ReactDOM.render(
-        <Descriptives mean = {data.mean} median = {data.median} mode = {data.mode} range = {data.range} />,
-        document.querySelector("#descriptives")
-      );
-    })
+const loadDescriptive = () => {
+  //test descriptive 
+  sendAjax('GET', '/getDescriptive', 'param=age', (data) => {
+    console.log(data);
+    ReactDOM.render(
+      <Descriptives mean = {data.mean} median = {data.median} mode = {data.mode} range = {data.range} />,
+      document.querySelector("#descriptives")
+    );
+  })
 }
 
 const setup = (csrf) => {
@@ -110,13 +115,11 @@ const setup = (csrf) => {
         document.querySelector("#addData")
     );
 
-    
     ReactDOM.render(
       <UploadForm csrf={csrf} />,
       document.querySelector("#uploadSection")
     );
-    
-
+  
     loadDataFromServer();
 }
 

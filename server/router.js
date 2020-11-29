@@ -7,7 +7,7 @@ const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
   app.get('/getData', mid.requiresSecure, controllers.Data.getData);
   app.get('/getDescriptive', mid.requiresSecure, controllers.Descriptive.getDescriptive);
-  app.get('/retrieve', mid.requiresLogin, controllers.File.retrieveFile);
+  //app.get('/retrieve', mid.requiresLogin, controllers.File.retrieveFile);
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
   app.get('/maker', mid.requiresLogin, controllers.Data.makerPage);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);

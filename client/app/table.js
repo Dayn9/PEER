@@ -3,7 +3,14 @@ const onCellChange = (row, column) => {
     //update the cell with this.setState() method
 }
 
+const DataTableRowArray = (row, headers) => {
+    let arr = [];
+    
+}
+
 const DataTable =(props) => {
+
+    console.log(props);
 
     if(props.headers.length === 0){
         return (
@@ -17,7 +24,8 @@ const DataTable =(props) => {
         <table className = "dataTable">
             <thead>
                 <tr>
-                    { //create the data table headers
+                    { 
+                    //create the data table headers
                     props.headers.map((header) => {
                         return (
                             <th key = {header}>{header}</th>
@@ -27,21 +35,26 @@ const DataTable =(props) => {
                 </tr>
             </thead>
             <tbody>
-                { //create each of the data table rows
+                { 
+                //create data rows 
                 props.data.map((row, rowIndex) => {
                     return (
                         <tr key={rowIndex}>
-                            <td><input type='text' className='form-control' value={row[props.headers[0]]} onChange={() => onCellChange(rowIndex, 0)}/></td>
-                            <td><input type='number' className='form-control' step='1' min="1" value={row[props.headers[1]]} onChange={() => onCellChange(rowIndex, 1)}/></td>
-                            <td><input type='number' className='form-control' step='1' min="1" value={row[props.headers[2]]} onChange={() => onCellChange(rowIndex, 2)}/></td>
+                            { 
+                                //create data point by looping over headers in row
+                                props.headers.map((header, colIndex) => {
+                                    return (
+                                        <td key = {colIndex}><input type='text' className='form-control' value={row[header]} onChange={() => onCellChange(rowIndex, colIndex)}/></td>
+                                    );
+                                }) 
+                                
+                            }                           
                         </tr>
                     );
                 })
                 }
             </tbody>
 
-
         </table>
     );
 }
-

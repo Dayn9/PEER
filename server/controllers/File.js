@@ -1,7 +1,5 @@
 const { head } = require('underscore');
-const filedb = require('../models/Filestore.js');
 const datadb = require('../models/Data.js');
-
 
 const uploadFile = (req, res) => {
     if(!req.files || Object.keys(req.files).length === 0){
@@ -11,28 +9,24 @@ const uploadFile = (req, res) => {
 
     const { sampleFile } = req.files;
 
-    const imageModel = new filedb.FileModel(sampleFile);
-
-    let parsedData = {};
-
     const str = sampleFile.data.toString('utf8');
-    const rows = str.split('\r');
-
+    const rows = str.split('\r');  
     const headers = rows[0].split(',');
-    
-    headers.forEach(h => { parsedData[h] = []; }); //create parsed data arrays
+    let parsedData = [];
  
     for(let r = 1; r < rows.length-1; r++){ //row index
       let col = rows[r].split(',');
-      console.dir(col);
+      let d = {}
       for(let c = 0; c < col.length; c++){ //col index
-        parsedData[headers[c]].push(col[c]);
+        d[headers[c]] = col[c];
       }  
+      parsedData.push(d);
     }
 
     const tableData = {
       headers: headers,
       data: parsedData,
+      owner: req.session.account._id,
     }
 
     let tableModel = new datadb.TableModel(tableData);
@@ -52,36 +46,10 @@ const uploadFile = (req, res) => {
       });
     });
 
-    
     //return res.json({ });
     return savePromise;
 }
-
-const retrieveFile = (req, res) => {
-    
-    if (!req.query.fileName) {
-      return res.status(400).json({ error: 'Missing File Name! ' });
-    }
-  
-    return filedb.FileModel.findOne({ name: req.query.fileName }, (error, doc) => {
-
-      if (error) {
-        console.dir(error);
-        return res.status(400).json({ error: 'An error occured retrieving the file. ' });
-      }
-  
-      if (!doc) {
-        return res.status(404).json({ error: 'File not found' });
-      }
-
-      res.writeHead(200, { 'Content-Type': doc.mimetype, 'Content-Length': doc.size });
-      return res.end(doc.data);
-    });
-  };
-  
-
 module.exports = {
     uploadFile,
-    retrieveFile,
 };
   

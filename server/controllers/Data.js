@@ -3,7 +3,7 @@ const models = require('../models');
 const { Data } = models;
 
 const makerPage = (req, res) => {
-  Data.DataModel.findByOwner(req.session.account._id, (err, docs) => {
+  Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
@@ -11,7 +11,7 @@ const makerPage = (req, res) => {
 
     return res.render('app', {
       csrfToken: req.csrfToken(),
-      domos: docs,
+      tableData: docs,
     });
   });
 };
@@ -43,7 +43,8 @@ const make = (req, res) => {
   return dataPromise;
 };
 
-const getData = (req, res) => Data.DataModel.findByOwner(req.session.account._id, (err, docs) => {
+//get all the uploads associated with this user
+const getData = (req, res) => Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
   if (err) {
     console.log(err);
     return res.status(400).json({ error: 'An error occurred' });
@@ -52,8 +53,18 @@ const getData = (req, res) => Data.DataModel.findByOwner(req.session.account._id
   return res.json({ data: docs });
 });
 
+//get the most recent upload
+const getRecentData = (req, res) => Data.TableModel.findByOwner(req.session.account._id, (err, docs) => {
+  if (err) {
+    console.log(err);
+    return res.status(400).json({ error: 'An error occurred' });
+  }
+
+  return res.json({ data: [docs[docs.length-1]] });
+});
+
 module.exports = {
   makerPage,
   make,
-  getData,
+  getData: getRecentData,
 };

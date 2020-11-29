@@ -2,7 +2,7 @@ const models = require('../models');
 
 const { Data } = models;
 
-const getDescriptive = (req, res) => Data.DataModel.findByOwner(
+const getDescriptive = (req, res) => Data.TableModel.findByOwner(
   req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
