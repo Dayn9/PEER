@@ -16,6 +16,8 @@ const handleData = (e) => {
     return false;
 }
 
+const 
+
 const DataForm = (props) => {
     return(
       <form id="dataForm" 
@@ -49,7 +51,35 @@ const DataForm = (props) => {
     );
   };
 
+const UploadForm = (props) => {
+  return(
+      <form 
+          //ref='uploadForm' 
+          id='uploadForm' 
+          action='/upload' 
+          method='POST' 
+          encType="multipart/form-data">
+      <input type="file" name="sampleFile" />
+      <input type="hidden" name="_csrf" value={props.csrf} />
+      <input type='submit' value='Upload!' />
+      </form> 
+  );
+};
 
+const RetrieveForm = (props) => {
+  return(
+      <form ref='retrieveForm' 
+          id='retrieveForm' 
+          action='/retrieve' 
+          method='get'>
+        <label for='fileName'>Retrieve File By Name: </label>
+        <input name='fileName' type='text' />
+        <input type="hidden" name="_csrf" value={props.csrf} />
+        <input type='submit' value='Download!' />
+        
+      </form>
+  );
+};
 
 const loadDataFromServer = () => {
     sendAjax('GET', '/getData', null, (data) => {
@@ -79,6 +109,13 @@ const setup = (csrf) => {
         <DataForm csrf={csrf} />, 
         document.querySelector("#addData")
     );
+
+    
+    ReactDOM.render(
+      <UploadForm csrf={csrf} />,
+      document.querySelector("#uploadSection")
+    );
+    
 
     loadDataFromServer();
 }

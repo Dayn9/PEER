@@ -4,9 +4,24 @@ const _ = require('underscore');
 mongoose.Promise = global.Promise;
 
 let DataModel = {};
+let TableModel = {};
 
 const convertId = mongoose.Types.ObjectId;
 const setName = (name) => _.escape(name).trim();
+
+const TableSchema = new mongoose.Schema({
+  headers: {
+    type: [String],
+    required: true,
+  },
+
+  data: {
+    type: Object,
+    required: true,
+  }
+});
+
+TableModel = mongoose.model('Table', TableSchema);
 
 const DataSchema = new mongoose.Schema({
   name: {
@@ -54,3 +69,5 @@ DataModel = mongoose.model('Data', DataSchema);
 
 module.exports.DataModel = DataModel;
 module.exports.DataSchema = DataSchema;
+module.exports.TableModel = TableModel;
+module.exports.TableSchema = TableSchema;

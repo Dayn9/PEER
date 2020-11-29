@@ -11,6 +11,7 @@ const RedisStore = require('connect-redis')(session);
 const url = require('url');
 const csrf = require('csurf');
 const redis = require('redis');
+const fileUpload = require('express-fileupload');
 
 const router = require('./router.js');
 
@@ -52,6 +53,7 @@ const app = express();
 app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
 app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
 app.use(compression());
+app.use(fileUpload());
 app.use(bodyParser.urlencoded({
   extended: true,
 }));
