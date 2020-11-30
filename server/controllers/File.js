@@ -1,4 +1,6 @@
-const datadb = require('../models/Data.js');
+const models = require('../models');
+
+const { Data } = models;
 
 const uploadFile = (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
@@ -28,7 +30,7 @@ const uploadFile = (req, res) => {
     owner: req.session.account._id,
   };
 
-  const tableModel = new datadb.TableModel(tableData);
+  const tableModel = new Data.TableModel(tableData);
   const savePromise = tableModel.save();
 
   savePromise.then(() => {

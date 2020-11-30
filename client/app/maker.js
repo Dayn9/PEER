@@ -82,14 +82,11 @@ const RetrieveForm = (props) => {
 
 const loadDataFromServer = () => {
     sendAjax('GET', '/getRecentData', null, (data) => {
-
-        console.log(data);
         
-        /*
         ReactDOM.render(
-            <DataChart domos={data.data} />, 
+            <DataChart headers = {data.data[0].headers} data = {data.data[0].data} />, 
             document.querySelector("#dataChartOptions")
-        );*/
+        );
 
         ReactDOM.render(
             <DataTable headers = {data.data[0].headers} data = {data.data[0].data} />,

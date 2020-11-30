@@ -10,8 +10,6 @@ const DataTableRowArray = (row, headers) => {
 
 const DataTable =(props) => {
 
-    console.log(props);
-
     if(props.headers.length === 0){
         return (
             <table className = "dataTable">

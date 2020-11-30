@@ -17,34 +17,40 @@ var xScale = d3.scaleLinear();
 var yScale = d3.scaleBand().padding(.1);
 var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - margin.bottom, " )"));
 var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)"));
-var chartProperty = 'age';
+var chartProperty = 'ages';
 
 var DataChart = function DataChart(props) {
-  var data = props.domos;
+  console.log(props);
+  var data = props.data;
+  var headers = props.headers;
+  var floatHeaders = headers.filter(function (h) {
+    return !isNaN(parseFloat(data[0][h]));
+  });
+  chartProperty = floatHeaders[0];
 
   var drawChart = function drawChart(property) {
     chartProperty = property; //store for reload on new
 
     xScale.domain([0, d3.max(data, function (d) {
-      return d[property];
+      return parseFloat(d[property]);
     }) + 10]).range([margin.left, width - margin.right]);
-    yScale.range([margin.top, height - margin.bottom]).domain(data.map(function (d) {
-      return d.name;
+    yScale.range([margin.top, height - margin.bottom]).domain(data.map(function (d, i) {
+      return i;
     }));
     svg.selectAll("rect").data(data, function (d) {
       return d._id;
     }).join(function (enter) {
-      return enter.append("rect").attr("x", xScale(0)).attr("y", function (d) {
-        return yScale(d.name);
+      return enter.append("rect").attr("x", xScale(0)).attr("y", function (d, i) {
+        return yScale(i);
       }).attr("width", function (d) {
-        return xScale(d[property] || 0) - xScale(0);
+        return xScale(parseFloat(d[property]) || 0) - xScale(0);
       }).attr("height", yScale.bandwidth()).attr("fill", "#338acc");
     }, function (update) {
       return update.call(function (update) {
-        return update.transition().duration(500).attr("x", xScale(0)).attr("y", function (d) {
-          return yScale(d.name);
+        return update.transition().duration(500).attr("x", xScale(0)).attr("y", function (d, i) {
+          return yScale(i);
         }).attr("width", function (d) {
-          return xScale(d[property] || 0) - xScale(0);
+          return xScale(parseFloat(d[property]) || 0) - xScale(0);
         }).attr("height", yScale.bandwidth());
       });
     });
@@ -52,23 +58,16 @@ var DataChart = function DataChart(props) {
     yAxis.call(d3.axisLeft(yScale));
   };
 
-  var drawChartAge = function drawChartAge() {
-    return drawChart('age');
-  };
-
-  var drawChartFriends = function drawChartFriends() {
-    return drawChart('friends');
-  };
-
-  drawChart(chartProperty); //return the controls and hook up the onClick functions
-
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-    className: "chartButton",
-    onClick: drawChartAge
-  }, "Show Ages"), /*#__PURE__*/React.createElement("button", {
-    className: "chartButton",
-    onClick: drawChartFriends
-  }, "Show Friends"));
+  drawChart(chartProperty);
+  return /*#__PURE__*/React.createElement("div", null, floatHeaders.map(function (header) {
+    return /*#__PURE__*/React.createElement("button", {
+      key: header,
+      className: "chartButton",
+      onClick: function onClick() {
+        return drawChart(header);
+      }
+    }, "Show: ", header);
+  }));
 };
 "use strict";
 
@@ -179,13 +178,10 @@ var RetrieveForm = function RetrieveForm(props) {
 
 var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getRecentData', null, function (data) {
-    console.log(data);
-    /*
-    ReactDOM.render(
-        <DataChart domos={data.data} />, 
-        document.querySelector("#dataChartOptions")
-    );*/
-
+    ReactDOM.render( /*#__PURE__*/React.createElement(DataChart, {
+      headers: data.data[0].headers,
+      data: data.data[0].data
+    }), document.querySelector("#dataChartOptions"));
     ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
       headers: data.data[0].headers,
       data: data.data[0].data
@@ -236,8 +232,6 @@ var DataTableRowArray = function DataTableRowArray(row, headers) {
 };
 
 var DataTable = function DataTable(props) {
-  console.log(props);
-
   if (props.headers.length === 0) {
     return /*#__PURE__*/React.createElement("table", {
       className: "dataTable"

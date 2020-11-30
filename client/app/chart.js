@@ -22,21 +22,26 @@ const xAxis = svg.append("g")
 const yAxis = svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
 
-let chartProperty = 'age';
+let chartProperty = 'ages';
 
 const DataChart = (props) => {
 
-    const data = props.domos;
+    console.log(props);
+    const data = props.data;
+    const headers = props.headers;
+
+    const floatHeaders = headers.filter(h => !isNaN(parseFloat(data[0][h])));
+    chartProperty = floatHeaders[0];
 
     const drawChart = (property) => {
         
         chartProperty = property; //store for reload on new
 
-        xScale.domain([0, d3.max(data, d=>d[property]) + 10])
+        xScale.domain([0, d3.max(data, d=> parseFloat(d[property])) + 10])
             .range([ margin.left, width-margin.right]);
 
         yScale.range([ margin.top, height - margin.bottom])
-            .domain(data.map((d) => d.name));
+            .domain(data.map((d, i) => i));
 
         svg.selectAll("rect")
           .data(data, d => d._id)
@@ -44,8 +49,8 @@ const DataChart = (props) => {
               enter => enter
                 .append("rect")
                 .attr("x", xScale(0) )
-                .attr("y", (d) => yScale(d.name))
-                .attr("width", (d) => xScale(d[property] || 0)-xScale(0))
+                .attr("y", (d, i) => yScale(i))
+                .attr("width", (d) => xScale(parseFloat(d[property]) || 0)-xScale(0))
                 .attr("height", yScale.bandwidth())
                 .attr("fill", "#338acc"),
             update => update
@@ -53,8 +58,8 @@ const DataChart = (props) => {
                     .transition()
                     .duration(500)
                     .attr("x", xScale(0) )
-                    .attr("y", (d) => yScale(d.name))
-                    .attr("width", (d) => xScale(d[property] || 0)-xScale(0))
+                    .attr("y", (d, i) => yScale(i))
+                    .attr("width", (d) => xScale(parseFloat(d[property]) || 0)-xScale(0))
                     .attr("height", yScale.bandwidth() )
                 )
           );
@@ -67,16 +72,18 @@ const DataChart = (props) => {
           yAxis.call(d3.axisLeft(yScale));
     }
 
-    const drawChartAge = () => drawChart('age');
-    const drawChartFriends = () => drawChart('friends');
-
     drawChart(chartProperty);
 
-    //return the controls and hook up the onClick functions
+
     return(
         <div>
-            <button className = "chartButton" onClick={drawChartAge}>Show Ages</button>
-            <button className = "chartButton" onClick={drawChartFriends}>Show Friends</button>
+            {
+                floatHeaders.map((header) => {
+                    return (
+                        <button key = {header} className = "chartButton" onClick={() => drawChart(header)}>Show: {header}</button>
+                    );
+                })
+            }
         </div>
     );
 }
