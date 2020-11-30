@@ -1,5 +1,88 @@
 "use strict";
 
+var handleError = function handleError(message) {
+  $("#errorMessage").text(message);
+  $("#messageBox").animate({
+    width: 'toggle'
+  }, 350);
+};
+
+var redirect = function redirect(res) {
+  $("#messageBox").animate({
+    width: 'hide'
+  }, 350);
+  window.location = res.redirect;
+};
+
+var sendAjaxFile = function sendAjaxFile(type, action, data, success) {
+  $.ajax({
+    cache: false,
+    type: type,
+    url: action,
+    data: data,
+    processData: false,
+    // tell jQuery not to process the data
+    contentType: false,
+    // tell jQuery not to set contentType
+    success: success,
+    error: function error(xhr, status, _error) {
+      var messageObj = JSON.parse(xhr.responseText);
+      handleError(messageObj.error);
+    }
+  });
+};
+
+var sendAjax = function sendAjax(type, action, data, success) {
+  $.ajax({
+    cache: false,
+    type: type,
+    url: action,
+    data: data,
+    dataType: "json",
+    success: success,
+    error: function error(xhr, status, _error2) {
+      var messageObj = JSON.parse(xhr.responseText);
+      handleError(messageObj.error);
+    }
+  });
+};
+
+var handleSignup = function handleSignup(e) {
+  e.preventDefault();
+  $("#messageBox").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("Error: All fields are required");
+    return false;
+  }
+
+  if ($("#pass").val() !== $("#pass2").val()) {
+    handleError("Error: Passwords do not match");
+    return false;
+  }
+
+  sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
+  return false;
+};
+
+var handleLogin = function handleLogin(e) {
+  e.preventDefault();
+  $("#messageBox").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '') {
+    handleError("Error: Username or password is empty");
+    return false;
+  }
+
+  sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
+  return false;
+};
+"use strict";
+
 /*
 Reference:
 https://www.d3-graph-gallery.com/graph/barplot_horizontal.html
@@ -20,7 +103,6 @@ var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, "
 var chartProperty = 'ages';
 
 var DataChart = function DataChart(props) {
-  console.log(props);
   var data = props.data;
   var headers = props.headers;
   var floatHeaders = headers.filter(function (h) {
@@ -71,77 +153,24 @@ var DataChart = function DataChart(props) {
 };
 "use strict";
 
-var handleData = function handleData(e) {
-  e.preventDefault();
+var handleFileUpload = function handleFileUpload(e) {
   $("#messageBox").animate({
     width: 'hide'
   }, 350);
-
-  if ($("#dataName").val() == '' || $("#dataAge").val() == '' || $("#dataFriends").val() == '') {
-    handleError("Error: All fields are required");
-    return false;
-  }
-
-  sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), function () {
-    loadDataFromServer();
-  });
+  window.location = '/maker';
   return false;
-};
-
-var DataForm = function DataForm(props) {
-  return /*#__PURE__*/React.createElement("form", {
-    id: "dataForm",
-    name: "dataForm",
-    onSubmit: handleData,
-    action: "/maker",
-    method: "POST",
-    className: "dataForm"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "name"
-  }, "Name: "), /*#__PURE__*/React.createElement("input", {
-    id: "dataName",
-    type: "text",
-    name: "name",
-    placeholder: "Name"
-  }), /*#__PURE__*/React.createElement("label", {
-    htmlFor: "age"
-  }, "Age: "), /*#__PURE__*/React.createElement("input", {
-    id: "dataAge",
-    type: "text",
-    name: "age",
-    placeholder: "Age"
-  }), /*#__PURE__*/React.createElement("label", {
-    htmlFor: "friends"
-  }, "Friends: "), /*#__PURE__*/React.createElement("input", {
-    id: "dataFriends",
-    type: "text",
-    name: "friends",
-    placeholder: "Friends"
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "hidden",
-    name: "_csrf",
-    value: props.csrf
-  }), /*#__PURE__*/React.createElement("input", {
-    className: "addDataSubmit",
-    type: "submit",
-    value: "Add Data"
-  }));
-};
-
-var Descriptives = function Descriptives(props) {
-  return /*#__PURE__*/React.createElement("div", {
-    id: "desc"
-  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for Age"), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
 };
 
 var UploadForm = function UploadForm(props) {
   return /*#__PURE__*/React.createElement("form", {
     //ref='uploadForm' 
     id: "uploadForm",
+    onSubmit: handleFileUpload,
     action: "/upload",
     method: "POST",
     encType: "multipart/form-data"
   }, /*#__PURE__*/React.createElement("input", {
+    id: "file",
     type: "file",
     name: "sampleFile"
   }), /*#__PURE__*/React.createElement("input", {
@@ -175,6 +204,25 @@ var RetrieveForm = function RetrieveForm(props) {
     value: "Download!"
   }));
 };
+"use strict";
+
+var LoginImage = function LoginImage(props) {
+  return /*#__PURE__*/React.createElement("a", {
+    href: "/login"
+  }, /*#__PURE__*/React.createElement("img", {
+    id: "logo",
+    src: "/assets/img/eyecon2x.png",
+    alt: "face logo"
+  }));
+};
+
+var LogoutButton = function LogoutButton(props) {
+  return /*#__PURE__*/React.createElement("div", {
+    "class": "navlink"
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "/logout"
+  }, "Log out"));
+};
 
 var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getRecentData', null, function (data) {
@@ -203,9 +251,6 @@ var loadDescriptive = function loadDescriptive() {
 };
 
 var setup = function setup(csrf) {
-  ReactDOM.render( /*#__PURE__*/React.createElement(DataForm, {
-    csrf: csrf
-  }), document.querySelector("#addData"));
   ReactDOM.render( /*#__PURE__*/React.createElement(UploadForm, {
     csrf: csrf
   }), document.querySelector("#uploadSection"));
@@ -221,6 +266,55 @@ var getToken = function getToken() {
 $(document).ready(function () {
   getToken();
 });
+"use strict";
+
+/*
+
+MAY BE USED LATER FOR EDITING THE DATA TABLE
+
+const handleData = (e) => {
+    e.preventDefault();
+
+    $("#messageBox").animate({width:'hide'},350);
+
+    if($("#dataName").val() == '' || $("#dataAge").val() == '' || $("#dataFriends").val() == '') {
+      handleError("Error: All fields are required");
+      return false;
+    }
+
+    sendAjax('POST', $("#dataForm").attr("action"), $("#dataForm").serialize(), () => {
+        loadDataFromServer();
+    });
+
+    return false;
+}
+
+const DataForm = (props) => {
+    return(
+      <form id="dataForm" 
+          name="dataForm" 
+          onSubmit={handleData}
+          action="/maker" 
+          method="POST" 
+          className="dataForm"
+      >
+        <label htmlFor="name">Name: </label>
+        <input id="dataName" type="text" name="name" placeholder="Name"/>
+        <label htmlFor="age">Age: </label>
+        <input id="dataAge" type="text" name="age" placeholder="Age"/>
+        <label htmlFor="friends">Friends: </label>
+        <input id="dataFriends" type="text" name="friends" placeholder="Friends"/>
+
+        <input type="hidden" name="_csrf" value={props.csrf} />
+        <input className="addDataSubmit" type="submit" value="Add Data" />
+      </form>
+    );
+};*/
+var Descriptives = function Descriptives(props) {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "desc"
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for Age"), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+};
 "use strict";
 
 //adapted from: https://stackoverflow.com/questions/39778797/react-editable-table
@@ -265,69 +359,4 @@ var DataTable = function DataTable(props) {
       }));
     }));
   })));
-};
-"use strict";
-
-var handleError = function handleError(message) {
-  $("#errorMessage").text(message);
-  $("#messageBox").animate({
-    width: 'toggle'
-  }, 350);
-};
-
-var redirect = function redirect(res) {
-  $("#messageBox").animate({
-    width: 'hide'
-  }, 350);
-  window.location = res.redirect;
-};
-
-var sendAjax = function sendAjax(type, action, data, success) {
-  $.ajax({
-    cache: false,
-    type: type,
-    url: action,
-    data: data,
-    dataType: "json",
-    success: success,
-    error: function error(xhr, status, _error) {
-      var messageObj = JSON.parse(xhr.responseText);
-      handleError(messageObj.error);
-    }
-  });
-};
-
-var handleSignup = function handleSignup(e) {
-  e.preventDefault();
-  $("#messageBox").animate({
-    width: 'hide'
-  }, 350);
-
-  if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-    handleError("Error: All fields are required");
-    return false;
-  }
-
-  if ($("#pass").val() !== $("#pass2").val()) {
-    handleError("Error: Passwords do not match");
-    return false;
-  }
-
-  sendAjax('POST', $("#signupForm").attr("action"), $("#signupForm").serialize(), redirect);
-  return false;
-};
-
-var handleLogin = function handleLogin(e) {
-  e.preventDefault();
-  $("#messageBox").animate({
-    width: 'hide'
-  }, 350);
-
-  if ($("#user").val() == '' || $("#pass").val() == '') {
-    handleError("Error: Username or password is empty");
-    return false;
-  }
-
-  sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
-  return false;
 };

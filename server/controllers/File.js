@@ -3,6 +3,7 @@ const models = require('../models');
 const { Data } = models;
 
 const uploadFile = (req, res) => {
+
   if (!req.files || Object.keys(req.files).length === 0) {
     // nothing to upload
     return res.status(400).json({ error: 'No files were uploaded' });
@@ -34,20 +35,15 @@ const uploadFile = (req, res) => {
   const savePromise = tableModel.save();
 
   savePromise.then(() => {
-    res.status(201).json({
-      message: 'Upload Successful! ',
-      redirect: '/maker',
-    });
+    //res.status(201).json({ message: 'Upload Successful! '});
+    res.redirect('/maker')
   });
   savePromise.catch((error) => {
     console.dir(error);
-    res.status(400).json({
-      error: 'Something went wrong uploading',
-      redirect: '/maker',
-    });
+    //res.status(400).json({ error: 'Something went wrong uploading' });
+    res.redirect('/maker');
   });
 
-  // return res.json({ });
   return savePromise;
 };
 module.exports = {

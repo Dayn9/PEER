@@ -26,7 +26,6 @@ let chartProperty = 'ages';
 
 const DataChart = (props) => {
 
-    console.log(props);
     const data = props.data;
     const headers = props.headers;
 

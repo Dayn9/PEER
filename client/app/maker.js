@@ -1,3 +1,6 @@
+/*
+
+MAY BE USED LATER FOR EDITING THE DATA TABLE
 
 const handleData = (e) => {
     e.preventDefault();
@@ -31,101 +34,24 @@ const DataForm = (props) => {
         <input id="dataAge" type="text" name="age" placeholder="Age"/>
         <label htmlFor="friends">Friends: </label>
         <input id="dataFriends" type="text" name="friends" placeholder="Friends"/>
+
         <input type="hidden" name="_csrf" value={props.csrf} />
         <input className="addDataSubmit" type="submit" value="Add Data" />
       </form>
     );
-  };
+};*/
 
-  const Descriptives = (props) => {
-    return(
-      <div id="desc">
-        <h3>Descriptive Statistics for Age</h3>
-        <p>Mean: {props.mean}</p>
-        <p>Median: {props.median}</p>
-        <p>Mode: {props.mode}</p>
-        <p>Range: {props.range[0]} - {props.range[1]}</p>
-      </div>
-    );
-  };
-
-const UploadForm = (props) => {
+const Descriptives = (props) => {
   return(
-      <form 
-          //ref='uploadForm' 
-          id='uploadForm' 
-          action='/upload' 
-          method='POST' 
-          encType="multipart/form-data">
-      <input type="file" name="sampleFile" />
-      <input type="hidden" name="_csrf" value={props.csrf} />
-      <input type='submit' value='Upload!' />
-      </form> 
+    <div id="desc">
+      <h3>Descriptive Statistics for Age</h3>
+      <p>Mean: {props.mean}</p>
+      <p>Median: {props.median}</p>
+      <p>Mode: {props.mode}</p>
+      <p>Range: {props.range[0]} - {props.range[1]}</p>
+    </div>
   );
 };
 
-//MAY BE USED LATER FOR DOWNLOAD CSV FEATURE
-const RetrieveForm = (props) => {
-  return(
-      <form ref='retrieveForm' 
-          id='retrieveForm' 
-          action='/retrieve' 
-          method='get'>
-        <label for='fileName'>Retrieve File By Name: </label>
-        <input name='fileName' type='text' />
-        <input type="hidden" name="_csrf" value={props.csrf} />
-        <input type='submit' value='Download!' />
-        
-      </form>
-  );
-};
 
-const loadDataFromServer = () => {
-    sendAjax('GET', '/getRecentData', null, (data) => {
-        
-        ReactDOM.render(
-            <DataChart headers = {data.data[0].headers} data = {data.data[0].data} />, 
-            document.querySelector("#dataChartOptions")
-        );
 
-        ReactDOM.render(
-            <DataTable headers = {data.data[0].headers} data = {data.data[0].data} />,
-            document.querySelector("#tableSection")
-        );
-    });
-}
-
-const loadDescriptive = () => {
-  //test descriptive 
-  sendAjax('GET', '/getDescriptive', 'param=age', (data) => {
-    console.log(data);
-    ReactDOM.render(
-      <Descriptives mean = {data.mean} median = {data.median} mode = {data.mode} range = {data.range} />,
-      document.querySelector("#descriptives")
-    );
-  })
-}
-
-const setup = (csrf) => {
-    ReactDOM.render(
-        <DataForm csrf={csrf} />, 
-        document.querySelector("#addData")
-    );
-
-    ReactDOM.render(
-      <UploadForm csrf={csrf} />,
-      document.querySelector("#uploadSection")
-    );
-  
-    loadDataFromServer();
-}
-
-const getToken = () => {
-    sendAjax('GET', '/getToken', null, (result) => {
-      setup(result.csrfToken);
-    });
-  }
-  
-$(document).ready(function(){
-  getToken();
-});

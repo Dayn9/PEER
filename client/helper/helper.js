@@ -9,6 +9,22 @@ const redirect = (res) => {
   }
   
 
+const sendAjaxFile = (type, action, data, success) => {
+  $.ajax({
+    cache: false,
+    type: type,
+    url: action,
+    data: data,
+    processData: false,  // tell jQuery not to process the data
+    contentType: false,  // tell jQuery not to set contentType
+    success: success,
+    error: (xhr, status, error) => {
+      const messageObj = JSON.parse(xhr.responseText);
+      handleError(messageObj.error);
+    }
+  });        
+}
+
 const sendAjax = (type, action, data, success) => {
     $.ajax({
       cache: false,
@@ -23,6 +39,7 @@ const sendAjax = (type, action, data, success) => {
       }
     });        
 }
+
 
 const handleSignup = (e) => {
     e.preventDefault(); 
