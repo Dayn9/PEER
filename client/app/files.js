@@ -34,7 +34,6 @@ const RetrieveForm = (props) => {
           <input name='fileName' type='text' />
           <input type="hidden" name="_csrf" value={props.csrf} />
           <input type='submit' value='Download!' />
-          
         </form>
     );
 };

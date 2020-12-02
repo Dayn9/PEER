@@ -51,7 +51,7 @@ const DataChart = (props) => {
                 .attr("y", (d, i) => yScale(i))
                 .attr("width", (d) => xScale(parseFloat(d[property]) || 0)-xScale(0))
                 .attr("height", yScale.bandwidth())
-                .attr("fill", "#338acc"),
+                .attr("fill", "#008b8b"),
             update => update
                 .call(update => update
                     .transition()

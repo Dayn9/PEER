@@ -126,7 +126,7 @@ var DataChart = function DataChart(props) {
         return yScale(i);
       }).attr("width", function (d) {
         return xScale(parseFloat(d[property]) || 0) - xScale(0);
-      }).attr("height", yScale.bandwidth()).attr("fill", "#338acc");
+      }).attr("height", yScale.bandwidth()).attr("fill", "#008b8b");
     }, function (update) {
       return update.call(function (update) {
         return update.transition().duration(500).attr("x", xScale(0)).attr("y", function (d, i) {
@@ -253,11 +253,11 @@ var NavigationControls = function NavigationControls(props) {
     id: "logo",
     src: "/assets/img/eyecon2x.png",
     alt: "face logo"
-  })), /*#__PURE__*/React.createElement("div", {
+  })), DescriptiveDropdown(props), ChartDropdown(props), /*#__PURE__*/React.createElement("div", {
     className: "navlink"
   }, /*#__PURE__*/React.createElement("a", {
     href: "/logout"
-  }, "Log out")), DescriptiveDropdown(props), ChartDropdown(props));
+  }, "Log out")));
 };
 
 var loadDataFromServer = function loadDataFromServer() {

@@ -45,9 +45,9 @@ const NavigationControls = (props) => {
     return(
         <div>
             <a href="/login"><img id="logo" src="/assets/img/eyecon2x.png" alt="face logo"/></a>
-            <div className="navlink"><a href="/logout">Log out</a></div>
             { DescriptiveDropdown(props) }
             { ChartDropdown(props) }
+            <div className="navlink"><a href="/logout">Log out</a></div>
         </div>
     );
 };

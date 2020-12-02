@@ -4,12 +4,16 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #logo {
     height: 40px;
     width: 40;
     padding-top: 5px;
+    padding-left: 10%;
+    padding-right: 10px;
     float:left;
     border-radius: 8px;
 }
@@ -17,39 +21,69 @@ html, body {
 nav {
     width: 100%;
     height: 50px;
-    background-color: #55acee;
+    background-color: darkcyan;
+    border-bottom: 2px solid whitesmoke;
+    box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.1);
+    position: absolute;
 }
 
-nav:nth-child(1) {
-    padding-left: 25px;
+/* 
+Dropdown Button 
+modified from https://www.w3schools.com/howto/howto_css_dropdown.asp
+*/ 
+.dropdown, .navlink {
+  position: relative;
+  display: inline-block;
+  font-size: 16px;
 }
 
-.navlink {
-    padding: 5px;
-    padding-top: 12px;
-    padding-left: 20px;
-    color: white;
-    font-size: 1.3em;
-    float: left;
+.navlink{
+    padding-top: 16px; /*??? no idea why*/
 }
 
-.navlink a, .navlink a:link, .navlink a:visited, .navlink a:hover, .navlink a:active {
-    color: white;
+.dropdownButton, .navlink a {
+    background-color: darkcyan;
+    color: whitesmoke;
+    padding: 16px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
     text-decoration: none;
-    padding: 5px;
-    border-radius: 4px;
-    background-color: #55acee;
-    transition: background-color 0.4s ease;
+    border: none;
 }
 
-.navlink a:hover {
-    transition: background-color 0.8s ease;
-    background-color: #66bdff;
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  border: 2px solid darkslategray;
+  background-color: whitesmoke;
+  min-width: 120px;
+  box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.1);
+  margin-top: -2px;
+  z-index: 1;
 }
+
+.dropdown-content a {
+  color: black;
+  padding: 10px 10px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropdownButton, .navlink a:hover, .navlink:active {background-color: darkslategray;}
+
 
 content {
     display: block;
     margin: auto;
+    margin-top: 50px; /*header*/
     width: 1000px;
     min-height: 100%;
 }
@@ -66,7 +100,6 @@ aside{
     max-width: 200px; /*carries width into smaller screen sizes*/
     display: block;
     float: right;
-    padding: 8px 0;
     margin: auto;
     text-align: center;
 }
@@ -99,20 +132,28 @@ aside a img{
     width: 100%;
 }
 
+section{
+    text-align: center;
+    width: 100%;
+    border: 2px solid white;
+    border-radius: 5px;
+    margin: 25px auto;
+}
+
 
 #ad-placeholder{
-    margin-top: 50px;
+    margin-top: 25px;
     border: 2px solid white;
     box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.1);
 }
 
 .dataForm {
-    border: 2px solid #338acc;
+    border: 2px solid darkslategrey;
     height: 35px;
     width: 1000px;
     margin-top:0px;
     padding-top:10px;
-    background-color: #55acee;
+    background-color: darkslategrey;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;
 }
@@ -130,28 +171,9 @@ aside a img{
     float:left;
 }
 
-.addDataSubmit {
-    transition: background-color 0.4s ease;
-    display: inline;
-    width: 90px;
-    background-color: #55acee;
-    border-radius: 2px;
-    color: white;
-    text-decoration: none;
-}
-
-.addDataSubmit:link, .addDataSubmit:visited, .addDataSubmit:hover, .addDataSubmit:active {
-    color: white;
-}
-
-.addDataSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
-}
-
 .mainForm {
     height: 300px;
-    width: 350px;
+    width: 100% ;
     margin: 0 auto;
     padding-top: 350px;
     font-size: 1.2em;
@@ -164,46 +186,26 @@ aside a img{
 .mainForm label {
     display: inline-block;
     width: 100px;
-    margin-right: 10px;
+    margin-right: 50px;
     text-align: right;
     font-size: 1.2em;
-}
-
-.formSubmit {
-    transition: background-color 0.4s ease;
-    display: block;
-    text-align: center;
-    margin: 0 auto;
-    margin-top: 14px;
-    font-size: 1.2em;
-    width: 100px;
-    background-color: #55acee;
-    border-radius: 2px;
-    border-color: #66acee;
-    padding: 3px 0px;
-    color: white;
-    text-decoration: none;
-}
-
-.formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
-    color: white;
-}
-
-.formSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
 }
 
 #user, #pass, #pass2 {
     text-align: center;
     font-size: 1.1em;
     width: 180px;
-    border-radius: 6px;
+    border-radius: 5px;
+    border: 2px solid whitesmoke;
+    box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    display: inline;
+
 }
 
 #user:focus, #pass:focus, #pass2:focus {
     outline: none;
-    box-shadow: 0px 0px 1px 1px #55acee;
+    box-shadow: 0px 0px 2px 2px darkturquoise
 }
 
 #messageBox {
@@ -231,79 +233,74 @@ aside a img{
     font-style: italic;
 }
 
-#dataChart, #descriptives {
+.chartButton, .formSubmit, #uploadForm input[type=submit] {
+    display: inline;
     text-align: center;
-    width: 500px;
-    border: 2px solid #55acee;
-    border-radius: 4px;
-    margin: 40px auto;
-    margin-top: 50px;
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    min-width: 100px;
+    background-color: darkcyan; 
+    border-radius: 5px;
+    border: 2px solid whitesmoke;
+    box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.2);
+    color: whitesmoke;
+    text-decoration: none;
 }
 
-table {
-    border: 2px solid #55acee;
-    margin: auto;
-    margin-top: 50px;
+input[type=file]::file-selector-button{
+    display: inline;
+    text-align: center;
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    min-width: 100px;
+    background-color: darkcyan;
+    border-radius: 5px;
+    border: 2px solid whitesmoke;
+    box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.2);
+    color: whitesmoke;
+    text-decoration: none;
 }
+
+input[type=file]::-webkit-file-upload-button {
+    display: inline;
+    text-align: center;
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    min-width: 100px;
+    background-color: darkcyan;
+    border-radius: 5px;
+    border: 2px solid whitesmoke;
+    box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.2);
+    color: whitesmoke;
+    text-decoration: none;
+}   
+
+table{
+    margin: auto;
+    overflow-x: scroll;
+}
+
+td input{
+    border: 2px solid #ddd;
+    border-radius: 2px;
+    padding: 3px 5px;
+}
+
 th{
     font-size: 1.5em;
     font-weight: bold;
 }
 
-
-
-.chartButton {
-    transition: background-color 0.4s ease;
-    display: inline;
-    text-align: center;
-    margin: 10px;
-    padding: 5px;
+#desc, #chart {
+    margin: auto;
     min-width: 100px;
-    background-color: #55acee;
-    border-radius: 2px;
-    color: white;
-    text-decoration: none;
+    padding: 10px 30px;
+    border-radius: 5px;
+    border: 2px solid darkslategray;
 }
-
-
-/* 
-Dropdown Button 
-modified from https://www.w3schools.com/howto/howto_css_dropdown.asp
-*/
-
-
-.dropdownButton {
-    background-color: #55acee;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 100px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 10px 10px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {background-color: #ddd;}
-
-.dropdown:hover .dropdown-content {display: block;}
-
-.dropdown:hover .dropdownButton {background-color: #3e8e41;}
