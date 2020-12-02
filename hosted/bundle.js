@@ -206,22 +206,58 @@ var RetrieveForm = function RetrieveForm(props) {
 };
 "use strict";
 
-var LoginImage = function LoginImage(props) {
-  return /*#__PURE__*/React.createElement("a", {
+var DescriptiveDropdown = function DescriptiveDropdown(props) {
+  if (props.headers != null) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "dropdown"
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "dropdownButton"
+    }, "Descriptive"), /*#__PURE__*/React.createElement("div", {
+      className: "dropdown-content"
+    }, //create the headers 
+    props.headers.map(function (header) {
+      return /*#__PURE__*/React.createElement("a", {
+        key: header,
+        onClick: function onClick() {
+          return loadDescriptive(header);
+        }
+      }, header);
+    })));
+  }
+};
+
+var ChartDropdown = function ChartDropdown(props) {
+  if (props.headers != null) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "dropdown"
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "dropdownButton"
+    }, "Chart"), /*#__PURE__*/React.createElement("div", {
+      className: "dropdown-content"
+    }, //create the headers 
+    props.headers.map(function (header) {
+      return /*#__PURE__*/React.createElement("a", {
+        key: header,
+        onClick: function onClick() {
+          return loadDescriptive(header);
+        }
+      }, header);
+    })));
+  }
+};
+
+var NavigationControls = function NavigationControls(props) {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
     href: "/login"
   }, /*#__PURE__*/React.createElement("img", {
     id: "logo",
     src: "/assets/img/eyecon2x.png",
     alt: "face logo"
-  }));
-};
-
-var LogoutButton = function LogoutButton(props) {
-  return /*#__PURE__*/React.createElement("div", {
-    "class": "navlink"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "navlink"
   }, /*#__PURE__*/React.createElement("a", {
     href: "/logout"
-  }, "Log out"));
+  }, "Log out")), DescriptiveDropdown(props), ChartDropdown(props));
 };
 
 var loadDataFromServer = function loadDataFromServer() {
@@ -234,14 +270,17 @@ var loadDataFromServer = function loadDataFromServer() {
       headers: data.data[0].headers,
       data: data.data[0].data
     }), document.querySelector("#tableSection"));
+    ReactDOM.render( /*#__PURE__*/React.createElement(NavigationControls, {
+      headers: data.data[0].headers
+    }), document.querySelector('nav'));
   });
 };
 
-var loadDescriptive = function loadDescriptive() {
+var loadDescriptive = function loadDescriptive(param) {
   //test descriptive 
-  sendAjax('GET', '/getDescriptive', 'param=age', function (data) {
+  sendAjax('GET', '/getDescriptive', "param=".concat(param), function (data) {
     console.log(data);
-    ReactDOM.render( /*#__PURE__*/React.createElement(Descriptives, {
+    ReactDOM.render( /*#__PURE__*/React.createElement(NumericDescriptive, {
       mean: data.mean,
       median: data.median,
       mode: data.mode,
@@ -254,6 +293,7 @@ var setup = function setup(csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(UploadForm, {
     csrf: csrf
   }), document.querySelector("#uploadSection"));
+  ReactDOM.render( /*#__PURE__*/React.createElement(NavigationControls, null), document.querySelector('nav'));
   loadDataFromServer();
 };
 
@@ -310,10 +350,16 @@ const DataForm = (props) => {
       </form>
     );
 };*/
-var Descriptives = function Descriptives(props) {
+var NumericDescriptive = function NumericDescriptive(props) {
   return /*#__PURE__*/React.createElement("div", {
     id: "desc"
-  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for Age"), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+};
+
+var CategoricalDescriptive = function CategoricalDescriptive(props) {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "desc"
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header));
 };
 "use strict";
 

@@ -41,10 +41,10 @@ const DataForm = (props) => {
     );
 };*/
 
-const Descriptives = (props) => {
+const NumericDescriptive = (props) => {
   return(
     <div id="desc">
-      <h3>Descriptive Statistics for Age</h3>
+      <h3>Descriptive Statistics for {props.header}</h3>
       <p>Mean: {props.mean}</p>
       <p>Median: {props.median}</p>
       <p>Mode: {props.mode}</p>
@@ -53,5 +53,15 @@ const Descriptives = (props) => {
   );
 };
 
+const CategoricalDescriptive = (props) => {
+  return(
+    <div id="desc">
+      <h3>Descriptive Statistics for {props.header}</h3>
+      {
+        //TODO
+      }
+    </div>
+  );
+}
 
 
