@@ -57,19 +57,22 @@ const NavigationControls = (props) => {
 };
 
 const loadDataFromServer = () => {
-    sendAjax('GET', '/getRecentData', null, (data) => {
+  sendAjax('GET', '/getRecentData', null, (data) => {
       
-        ReactDOM.render(
-            <DataTable name = {data.data[0].name.split('.')[0]} headers = {data.data[0].headers} data = {data.data[0].data} />,
-            document.querySelector("#tableSection")
-        );
-
-        ReactDOM.render(
-            <NavigationControls headers = {data.data[0].headers} data = {data.data[0].data} />,
-            document.querySelector('nav')
-        );
+    if(data.data[0] != null){
         
-    });
+      ReactDOM.render(
+        <DataTable name = {data.data[0].name} headers = {data.data[0].headers} data = {data.data[0].data} />,
+        document.querySelector("#tableSection")
+      );
+        
+      ReactDOM.render(
+        <NavigationControls headers = {data.data[0].headers} data = {data.data[0].data} />,
+        document.querySelector('nav')
+      );
+      
+    }
+  });
 }
 
 const loadChart = (header) => {

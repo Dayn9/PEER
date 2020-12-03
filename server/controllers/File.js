@@ -3,7 +3,6 @@ const models = require('../models');
 const { Data } = models;
 
 const uploadFile = (req, res) => {
-
   if (!req.files || Object.keys(req.files).length === 0) {
     // nothing to upload
     return res.status(400).json({ error: 'No files were uploaded' });
@@ -11,7 +10,10 @@ const uploadFile = (req, res) => {
 
   const { sampleFile } = req.files;
 
-  console.dir(sampleFile);
+  if (sampleFile.name.split('.')[1] !== 'csv') {
+    // nothing to upload
+    return res.status(422).json({ error: 'File must be a CSV' });
+  }
 
   const str = sampleFile.data.toString('utf8');
   const rows = str.split('\r');
@@ -27,8 +29,10 @@ const uploadFile = (req, res) => {
     parsedData.push(d);
   }
 
+  const fileName = sampleFile.name.split('.')[0]; // remove file extension
+
   const tableData = {
-    name: sampleFile.name,
+    name: fileName,
     headers,
     data: parsedData,
     owner: req.session.account._id,
@@ -38,12 +42,12 @@ const uploadFile = (req, res) => {
   const savePromise = tableModel.save();
 
   savePromise.then(() => {
-    //res.status(201).json({ message: 'Upload Successful! '});
-    res.redirect('/maker')
+    // res.status(201).json({ message: 'Upload Successful! '});
+    res.redirect('/maker');
   });
   savePromise.catch((error) => {
     console.dir(error);
-    //res.status(400).json({ error: 'Something went wrong uploading' });
+    // res.status(400).json({ error: 'Something went wrong uploading' });
     res.redirect('/maker');
   });
 

@@ -260,15 +260,17 @@ var NavigationControls = function NavigationControls(props) {
 
 var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getRecentData', null, function (data) {
-    ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
-      name: data.data[0].name.split('.')[0],
-      headers: data.data[0].headers,
-      data: data.data[0].data
-    }), document.querySelector("#tableSection"));
-    ReactDOM.render( /*#__PURE__*/React.createElement(NavigationControls, {
-      headers: data.data[0].headers,
-      data: data.data[0].data
-    }), document.querySelector('nav'));
+    if (data.data[0] != null) {
+      ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
+        name: data.data[0].name,
+        headers: data.data[0].headers,
+        data: data.data[0].data
+      }), document.querySelector("#tableSection"));
+      ReactDOM.render( /*#__PURE__*/React.createElement(NavigationControls, {
+        headers: data.data[0].headers,
+        data: data.data[0].data
+      }), document.querySelector('nav'));
+    }
   });
 };
 
