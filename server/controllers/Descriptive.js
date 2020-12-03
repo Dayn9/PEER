@@ -14,7 +14,6 @@ const getDescriptive = (req, res) => Data.TableModel.findByOwner(
     }
 
     const { param } = req.query;
-    console.log(param);
     const data = docs[docs.length - 1].data;
 
     const values = data.map((d) => parseFloat(d[param])); // get an array of the relevant data

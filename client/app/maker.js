@@ -45,10 +45,10 @@ const NumericDescriptive = (props) => {
   return(
     <div id="desc">
       <h3>Descriptive Statistics for {props.header}</h3>
-      <p>Mean: {props.mean}</p>
-      <p>Median: {props.median}</p>
-      <p>Mode: {props.mode}</p>
-      <p>Range: {props.range[0]} - {props.range[1]}</p>
+      <p>Mean: <strong>{props.mean}</strong></p>
+      <p>Median: <strong>{props.median}</strong></p>
+      <p>Mode: <strong>{props.mode}</strong></p>
+      <p>Range: <strong>{props.range[0]} - {props.range[1]}</strong></p>
     </div>
   );
 };

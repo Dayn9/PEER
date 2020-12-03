@@ -19,40 +19,45 @@ const DataTable =(props) => {
     }
 
     return(
-        <table className = "dataTable">
-            <thead>
-                <tr>
+        <div>
+            <h3>{props.name}</h3>
+            <table className = "dataTable">
+                <thead>
+                    <tr>
+                        <th style={{width: 30}}></th>
+                        { 
+                        //create the data table headers
+                        props.headers.map((header) => {
+                            return (
+                                <th key = {header}>{header}</th>
+                            );
+                        })
+                        }
+                    </tr>
+                </thead>
+                <tbody>
                     { 
-                    //create the data table headers
-                    props.headers.map((header) => {
+                    //create data rows 
+                    props.data.map((row, rowIndex) => {
                         return (
-                            <th key = {header}>{header}</th>
+                            <tr key={rowIndex}>
+                                <td><strong>{rowIndex}</strong></td>
+                                { 
+                                    //create data point by looping over headers in row
+                                    props.headers.map((header, colIndex) => {
+                                        return (
+                                            <td key = {colIndex}><input type='text' className='form-control' value={row[header]} onChange={() => onCellChange(rowIndex, colIndex)}/></td>
+                                        );
+                                    }) 
+                                }                           
+                            </tr>
                         );
                     })
                     }
-                </tr>
-            </thead>
-            <tbody>
-                { 
-                //create data rows 
-                props.data.map((row, rowIndex) => {
-                    return (
-                        <tr key={rowIndex}>
-                            { 
-                                //create data point by looping over headers in row
-                                props.headers.map((header, colIndex) => {
-                                    return (
-                                        <td key = {colIndex}><input type='text' className='form-control' value={row[header]} onChange={() => onCellChange(rowIndex, colIndex)}/></td>
-                                    );
-                                }) 
-                                
-                            }                           
-                        </tr>
-                    );
-                })
-                }
-            </tbody>
+                </tbody> 
+            </table>
+        </div>
 
-        </table>
+        
     );
 }

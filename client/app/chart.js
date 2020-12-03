@@ -24,26 +24,23 @@ const yAxis = svg.append("g")
 
 let chartProperty = 'ages';
 
-const DataChart = (props) => {
+const NumericChart = (props) => {
 
     const data = props.data;
-    const headers = props.headers;
-
-    const floatHeaders = headers.filter(h => !isNaN(parseFloat(data[0][h])));
-    chartProperty = floatHeaders[0];
+    chartProperty = props.header;
 
     const drawChart = (property) => {
         
         chartProperty = property; //store for reload on new
 
-        xScale.domain([0, d3.max(data, d=> parseFloat(d[property])) + 10])
+        xScale.domain([0, d3.max(data, d=> parseFloat(d[property]))])
             .range([ margin.left, width-margin.right]);
 
         yScale.range([ margin.top, height - margin.bottom])
             .domain(data.map((d, i) => i));
 
         svg.selectAll("rect")
-          .data(data, d => d._id)
+          .data(data, (d, i) => i) //map by index
           .join(
               enter => enter
                 .append("rect")
@@ -73,16 +70,7 @@ const DataChart = (props) => {
 
     drawChart(chartProperty);
 
-
     return(
-        <div>
-            {
-                floatHeaders.map((header) => {
-                    return (
-                        <button key = {header} className = "chartButton" onClick={() => drawChart(header)}>Show: {header}</button>
-                    );
-                })
-            }
-        </div>
+        <h3>Chart for {props.header}</h3>
     );
 }

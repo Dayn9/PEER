@@ -102,26 +102,23 @@ var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - mar
 var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)"));
 var chartProperty = 'ages';
 
-var DataChart = function DataChart(props) {
+var NumericChart = function NumericChart(props) {
   var data = props.data;
-  var headers = props.headers;
-  var floatHeaders = headers.filter(function (h) {
-    return !isNaN(parseFloat(data[0][h]));
-  });
-  chartProperty = floatHeaders[0];
+  chartProperty = props.header;
 
   var drawChart = function drawChart(property) {
     chartProperty = property; //store for reload on new
 
     xScale.domain([0, d3.max(data, function (d) {
       return parseFloat(d[property]);
-    }) + 10]).range([margin.left, width - margin.right]);
+    })]).range([margin.left, width - margin.right]);
     yScale.range([margin.top, height - margin.bottom]).domain(data.map(function (d, i) {
       return i;
     }));
-    svg.selectAll("rect").data(data, function (d) {
-      return d._id;
-    }).join(function (enter) {
+    svg.selectAll("rect").data(data, function (d, i) {
+      return i;
+    }) //map by index
+    .join(function (enter) {
       return enter.append("rect").attr("x", xScale(0)).attr("y", function (d, i) {
         return yScale(i);
       }).attr("width", function (d) {
@@ -141,15 +138,7 @@ var DataChart = function DataChart(props) {
   };
 
   drawChart(chartProperty);
-  return /*#__PURE__*/React.createElement("div", null, floatHeaders.map(function (header) {
-    return /*#__PURE__*/React.createElement("button", {
-      key: header,
-      className: "chartButton",
-      onClick: function onClick() {
-        return drawChart(header);
-      }
-    }, "Show: ", header);
-  }));
+  return /*#__PURE__*/React.createElement("h3", null, "Chart for ", props.header);
 };
 "use strict";
 
@@ -206,8 +195,8 @@ var RetrieveForm = function RetrieveForm(props) {
 };
 "use strict";
 
-var DescriptiveDropdown = function DescriptiveDropdown(props) {
-  if (props.headers != null) {
+var DescriptiveDropdown = function DescriptiveDropdown(headers) {
+  if (headers != null) {
     return /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
     }, /*#__PURE__*/React.createElement("button", {
@@ -215,7 +204,7 @@ var DescriptiveDropdown = function DescriptiveDropdown(props) {
     }, "Descriptive"), /*#__PURE__*/React.createElement("div", {
       className: "dropdown-content"
     }, //create the headers 
-    props.headers.map(function (header) {
+    headers.map(function (header) {
       return /*#__PURE__*/React.createElement("a", {
         key: header,
         onClick: function onClick() {
@@ -226,8 +215,8 @@ var DescriptiveDropdown = function DescriptiveDropdown(props) {
   }
 };
 
-var ChartDropdown = function ChartDropdown(props) {
-  if (props.headers != null) {
+var ChartDropdown = function ChartDropdown(headers) {
+  if (headers != null) {
     return /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
     }, /*#__PURE__*/React.createElement("button", {
@@ -235,11 +224,11 @@ var ChartDropdown = function ChartDropdown(props) {
     }, "Chart"), /*#__PURE__*/React.createElement("div", {
       className: "dropdown-content"
     }, //create the headers 
-    props.headers.map(function (header) {
+    headers.map(function (header) {
       return /*#__PURE__*/React.createElement("a", {
         key: header,
         onClick: function onClick() {
-          return loadDescriptive(header);
+          return loadChart(header);
         }
       }, header);
     })));
@@ -247,13 +236,22 @@ var ChartDropdown = function ChartDropdown(props) {
 };
 
 var NavigationControls = function NavigationControls(props) {
+  /*screen out categorical variables*/
+  var headers = props.headers;
+
+  if (props.headers !== undefined && props.data !== undefined) {
+    headers = props.headers.filter(function (h) {
+      return !isNaN(parseFloat(props.data[0][h]));
+    });
+  }
+
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
     href: "/login"
   }, /*#__PURE__*/React.createElement("img", {
     id: "logo",
     src: "/assets/img/eyecon2x.png",
     alt: "face logo"
-  })), DescriptiveDropdown(props), ChartDropdown(props), /*#__PURE__*/React.createElement("div", {
+  })), DescriptiveDropdown(headers), ChartDropdown(headers), /*#__PURE__*/React.createElement("div", {
     className: "navlink"
   }, /*#__PURE__*/React.createElement("a", {
     href: "/logout"
@@ -262,25 +260,31 @@ var NavigationControls = function NavigationControls(props) {
 
 var loadDataFromServer = function loadDataFromServer() {
   sendAjax('GET', '/getRecentData', null, function (data) {
-    ReactDOM.render( /*#__PURE__*/React.createElement(DataChart, {
-      headers: data.data[0].headers,
-      data: data.data[0].data
-    }), document.querySelector("#dataChartOptions"));
     ReactDOM.render( /*#__PURE__*/React.createElement(DataTable, {
+      name: data.data[0].name.split('.')[0],
       headers: data.data[0].headers,
       data: data.data[0].data
     }), document.querySelector("#tableSection"));
     ReactDOM.render( /*#__PURE__*/React.createElement(NavigationControls, {
-      headers: data.data[0].headers
+      headers: data.data[0].headers,
+      data: data.data[0].data
     }), document.querySelector('nav'));
   });
 };
 
-var loadDescriptive = function loadDescriptive(param) {
-  //test descriptive 
-  sendAjax('GET', '/getDescriptive', "param=".concat(param), function (data) {
-    console.log(data);
+var loadChart = function loadChart(header) {
+  sendAjax('GET', '/getRecentData', null, function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(NumericChart, {
+      header: header,
+      data: data.data[0].data
+    }), document.querySelector("#chartProperties"));
+  });
+};
+
+var loadDescriptive = function loadDescriptive(header) {
+  sendAjax('GET', '/getDescriptive', "param=".concat(header), function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(NumericDescriptive, {
+      header: header,
       mean: data.mean,
       median: data.median,
       mode: data.mode,
@@ -353,7 +357,7 @@ const DataForm = (props) => {
 var NumericDescriptive = function NumericDescriptive(props) {
   return /*#__PURE__*/React.createElement("div", {
     id: "desc"
-  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("p", null, "Mean: ", props.mean), /*#__PURE__*/React.createElement("p", null, "Median: ", props.median), /*#__PURE__*/React.createElement("p", null, "Mode: ", props.mode), /*#__PURE__*/React.createElement("p", null, "Range: ", props.range[0], " - ", props.range[1]));
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("p", null, "Mean: ", /*#__PURE__*/React.createElement("strong", null, props.mean)), /*#__PURE__*/React.createElement("p", null, "Median: ", /*#__PURE__*/React.createElement("strong", null, props.median)), /*#__PURE__*/React.createElement("p", null, "Mode: ", /*#__PURE__*/React.createElement("strong", null, props.mode)), /*#__PURE__*/React.createElement("p", null, "Range: ", /*#__PURE__*/React.createElement("strong", null, props.range[0], " - ", props.range[1])));
 };
 
 var CategoricalDescriptive = function CategoricalDescriptive(props) {
@@ -380,9 +384,13 @@ var DataTable = function DataTable(props) {
     }, "No Data Yet"));
   }
 
-  return /*#__PURE__*/React.createElement("table", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, props.name), /*#__PURE__*/React.createElement("table", {
     className: "dataTable"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, //create the data table headers
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: 30
+    }
+  }), //create the data table headers
   props.headers.map(function (header) {
     return /*#__PURE__*/React.createElement("th", {
       key: header
@@ -391,7 +399,7 @@ var DataTable = function DataTable(props) {
   props.data.map(function (row, rowIndex) {
     return /*#__PURE__*/React.createElement("tr", {
       key: rowIndex
-    }, //create data point by looping over headers in row
+    }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("strong", null, rowIndex)), //create data point by looping over headers in row
     props.headers.map(function (header, colIndex) {
       return /*#__PURE__*/React.createElement("td", {
         key: colIndex
@@ -404,5 +412,5 @@ var DataTable = function DataTable(props) {
         }
       }));
     }));
-  })));
+  }))));
 };

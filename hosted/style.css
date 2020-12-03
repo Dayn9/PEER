@@ -283,6 +283,7 @@ input[type=file]::-webkit-file-upload-button {
 
 table{
     margin: auto;
+    margin-top: 20px;
     overflow-x: scroll;
 }
 
@@ -295,9 +296,12 @@ td input{
 th{
     font-size: 1.5em;
     font-weight: bold;
+    border-bottom: 2px solid darkcyan;
+    padding-bottom: 5px;
+    border-radius: 2px;
 }
 
-#desc, #chart {
+h3 {
     margin: auto;
     min-width: 100px;
     padding: 10px 30px;

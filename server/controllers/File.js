@@ -11,6 +11,8 @@ const uploadFile = (req, res) => {
 
   const { sampleFile } = req.files;
 
+  console.dir(sampleFile);
+
   const str = sampleFile.data.toString('utf8');
   const rows = str.split('\r');
   const headers = rows[0].split(',');
@@ -26,6 +28,7 @@ const uploadFile = (req, res) => {
   }
 
   const tableData = {
+    name: sampleFile.name,
     headers,
     data: parsedData,
     owner: req.session.account._id,

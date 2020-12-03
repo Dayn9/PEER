@@ -7,6 +7,12 @@ let TableModel = {};
 const convertId = mongoose.Types.ObjectId;
 
 const TableSchema = new mongoose.Schema({
+
+  name: {
+    type: String,
+    required: true,
+  },
+
   headers: {
     type: [String],
     required: true,
