@@ -22,7 +22,7 @@ const xAxis = svg.append("g")
 const yAxis = svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
 
-let chartProperty = 'ages';
+let chartProperty = '';
 
 const NumericChart = (props) => {
 

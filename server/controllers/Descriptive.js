@@ -2,7 +2,7 @@ const models = require('../models');
 
 const { Data } = models;
 
-const getDescriptive = (req, res) => Data.TableModel.findByOwner(
+const getDescriptiveNumeric = (req, res) => Data.TableModel.findByOwner(
   req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
@@ -55,6 +55,50 @@ const getDescriptive = (req, res) => Data.TableModel.findByOwner(
   },
 );
 
+const getDescriptiveCategorical = (req, res) => Data.TableModel.findByOwner(
+  req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+
+    if (docs.length === 0) {
+      return res.status(400).json({ error: 'No Data' });
+    }
+
+    const { param } = req.query;
+    const { data } = docs[docs.length - 1];
+
+    const values = data.map((d) => d[param]); // get an array of the relevant data
+    const len = values.length;
+    values.sort(); //alphabetical sort
+
+    // get the counts
+    counts = values.reduce((acc, cur) => {
+      if (!(cur in acc)) {
+        acc[cur] = 0;
+      }
+      acc[cur]++;
+      return acc;
+    }, {});
+
+    //get the percentages
+    percents =  values.reduce((acc, cur) => {
+      if (!(cur in acc)) {
+        acc[cur] = 0;
+      }
+      acc[cur] += 1/len;
+      return acc;
+    }, {});
+    
+    return res.json({
+      counts, percents,
+    });
+  },
+);
+  
+
 module.exports = {
-  getDescriptive,
+  getDescriptiveNumeric,
+  getDescriptiveCategorical,
 };

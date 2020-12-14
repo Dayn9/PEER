@@ -100,7 +100,7 @@ var xScale = d3.scaleLinear();
 var yScale = d3.scaleBand().padding(.1);
 var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - margin.bottom, " )"));
 var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)"));
-var chartProperty = 'ages';
+var chartProperty = '';
 
 var NumericChart = function NumericChart(props) {
   var data = props.data;
@@ -195,8 +195,8 @@ var RetrieveForm = function RetrieveForm(props) {
 };
 "use strict";
 
-var DescriptiveDropdown = function DescriptiveDropdown(headers) {
-  if (headers != null) {
+var DescriptiveDropdown = function DescriptiveDropdown(headerData) {
+  if (headerData != null) {
     return /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
     }, /*#__PURE__*/React.createElement("button", {
@@ -204,19 +204,19 @@ var DescriptiveDropdown = function DescriptiveDropdown(headers) {
     }, "Descriptive"), /*#__PURE__*/React.createElement("div", {
       className: "dropdown-content"
     }, //create the headers 
-    headers.map(function (header) {
+    headerData.map(function (d) {
       return /*#__PURE__*/React.createElement("a", {
-        key: header,
+        key: d.header,
         onClick: function onClick() {
-          return loadDescriptive(header);
+          return d.isCategorical ? loadDescriptiveCategorical(d.header) : loadDescriptiveNumeric(d.header);
         }
-      }, header);
+      }, d.header);
     })));
   }
 };
 
-var ChartDropdown = function ChartDropdown(headers) {
-  if (headers != null) {
+var ChartDropdown = function ChartDropdown(headerData) {
+  if (headerData != null) {
     return /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
     }, /*#__PURE__*/React.createElement("button", {
@@ -224,7 +224,7 @@ var ChartDropdown = function ChartDropdown(headers) {
     }, "Chart"), /*#__PURE__*/React.createElement("div", {
       className: "dropdown-content"
     }, //create the headers 
-    headers.map(function (header) {
+    headerData.map(function (header) {
       return /*#__PURE__*/React.createElement("a", {
         key: header,
         onClick: function onClick() {
@@ -237,13 +237,31 @@ var ChartDropdown = function ChartDropdown(headers) {
 
 var NavigationControls = function NavigationControls(props) {
   /*screen out categorical variables*/
-  var headers = props.headers;
-
   if (props.headers !== undefined && props.data !== undefined) {
-    headers = props.headers.filter(function (h) {
-      return !isNaN(parseFloat(props.data[0][h]));
-    });
-  }
+    var headers = props.headers; //let isCategorical = headers.map(h => isNaN(parseFloat(props.data[0][h])));
+
+    var headerData = headers.reduce(function (acc, cur) {
+      console.log(acc);
+      acc.push({
+        header: cur,
+        isCategorical: isNaN(parseFloat(props.data[0][cur]))
+      });
+      return acc;
+    }, []);
+    console.log(headerData);
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
+      href: "/login"
+    }, /*#__PURE__*/React.createElement("img", {
+      id: "logo",
+      src: "/assets/img/eyecon2x.png",
+      alt: "face logo"
+    })), DescriptiveDropdown(headerData), ChartDropdown(headers), /*#__PURE__*/React.createElement("div", {
+      className: "navlink"
+    }, /*#__PURE__*/React.createElement("a", {
+      href: "/logout"
+    }, "Log out")));
+  } //default return logout only
+
 
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
     href: "/login"
@@ -251,7 +269,7 @@ var NavigationControls = function NavigationControls(props) {
     id: "logo",
     src: "/assets/img/eyecon2x.png",
     alt: "face logo"
-  })), DescriptiveDropdown(headers), ChartDropdown(headers), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
     className: "navlink"
   }, /*#__PURE__*/React.createElement("a", {
     href: "/logout"
@@ -283,14 +301,24 @@ var loadChart = function loadChart(header) {
   });
 };
 
-var loadDescriptive = function loadDescriptive(header) {
-  sendAjax('GET', '/getDescriptive', "param=".concat(header), function (data) {
+var loadDescriptiveNumeric = function loadDescriptiveNumeric(header) {
+  sendAjax('GET', '/getDescriptiveNumeric', "param=".concat(header), function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(NumericDescriptive, {
       header: header,
       mean: data.mean,
       median: data.median,
       mode: data.mode,
       range: data.range
+    }), document.querySelector("#descriptives"));
+  });
+};
+
+var loadDescriptiveCategorical = function loadDescriptiveCategorical(header) {
+  sendAjax('GET', '/getDescriptiveCategorical', "param=".concat(header), function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(CategoricalDescriptive, {
+      header: header,
+      counts: data.counts,
+      percents: data.percents
     }), document.querySelector("#descriptives"));
   });
 };
@@ -359,13 +387,22 @@ const DataForm = (props) => {
 var NumericDescriptive = function NumericDescriptive(props) {
   return /*#__PURE__*/React.createElement("div", {
     id: "desc"
-  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("p", null, "Mean: ", /*#__PURE__*/React.createElement("strong", null, props.mean)), /*#__PURE__*/React.createElement("p", null, "Median: ", /*#__PURE__*/React.createElement("strong", null, props.median)), /*#__PURE__*/React.createElement("p", null, "Mode: ", /*#__PURE__*/React.createElement("strong", null, props.mode)), /*#__PURE__*/React.createElement("p", null, "Range: ", /*#__PURE__*/React.createElement("strong", null, props.range[0], " - ", props.range[1])));
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("p", null, "Mean: ", /*#__PURE__*/React.createElement("strong", null, props.mean.toFixed(2))), /*#__PURE__*/React.createElement("p", null, "Median: ", /*#__PURE__*/React.createElement("strong", null, props.median.toFixed(2))), /*#__PURE__*/React.createElement("p", null, "Mode: ", /*#__PURE__*/React.createElement("strong", null, props.mode.toFixed(2))), /*#__PURE__*/React.createElement("p", null, "Range: ", /*#__PURE__*/React.createElement("strong", null, props.range[0].toFixed(2), " - ", props.range[1].toFixed(2))));
 };
 
 var CategoricalDescriptive = function CategoricalDescriptive(props) {
+  var keys = Object.keys(props.counts);
   return /*#__PURE__*/React.createElement("div", {
     id: "desc"
-  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header));
+  }, /*#__PURE__*/React.createElement("h3", null, "Descriptive Statistics for ", props.header), /*#__PURE__*/React.createElement("table", {
+    style: {
+      'textAlign': 'center'
+    }
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null), /*#__PURE__*/React.createElement("th", null, "Count"), /*#__PURE__*/React.createElement("th", null, "Percent"))), /*#__PURE__*/React.createElement("tbody", null, keys.map(function (key) {
+    return /*#__PURE__*/React.createElement("tr", {
+      key: key
+    }, /*#__PURE__*/React.createElement("td", null, key), /*#__PURE__*/React.createElement("td", null, props.counts[key]), /*#__PURE__*/React.createElement("td", null, props.percents[key].toFixed(2), "%"));
+  }))));
 };
 "use strict";
 

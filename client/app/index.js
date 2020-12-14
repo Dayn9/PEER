@@ -1,14 +1,16 @@
-const DescriptiveDropdown = (headers) => {
-  if(headers != null){
+const DescriptiveDropdown = (headerData) => {
+  if(headerData != null){
     return(
       <div className ="dropdown">
         <button className ="dropdownButton">Descriptive</button>
         <div className ="dropdown-content">
           { 
           //create the headers 
-          headers.map((header) => {
+          headerData.map((d) => {
               return (
-                  <a key = {header} onClick = {() => loadDescriptive(header)}>{header}</a>
+                  <a key = {d.header} onClick = {
+                    () => d.isCategorical ? loadDescriptiveCategorical(d.header) : loadDescriptiveNumeric(d.header)
+                  }>{d.header}</a>
               );
           })
           }
@@ -18,15 +20,15 @@ const DescriptiveDropdown = (headers) => {
   }
 }
 
-const ChartDropdown = (headers) => {
-  if(headers != null){
+const ChartDropdown = (headerData) => {
+  if(headerData != null){
     return(
       <div className ="dropdown">
         <button className ="dropdownButton">Chart</button>
         <div className ="dropdown-content">
           { 
           //create the headers 
-          headers.map((header) => {
+          headerData.map((header) => {
               return (
                   <a key = {header} onClick = {() => loadChart(header)}>{header}</a>
               );
@@ -41,16 +43,34 @@ const ChartDropdown = (headers) => {
 const NavigationControls = (props) => {
     
     /*screen out categorical variables*/
-    let headers = props.headers
     if(props.headers !== undefined && props.data !== undefined){
-      headers = props.headers.filter(h => !isNaN(parseFloat(props.data[0][h])));
+      let headers = props.headers;
+      //let isCategorical = headers.map(h => isNaN(parseFloat(props.data[0][h])));
+      let headerData = headers.reduce((acc, cur) => {
+        console.log(acc);
+        acc.push({
+          header: cur,
+          isCategorical: isNaN(parseFloat(props.data[0][cur]))
+        });
+        return acc;
+      }, []);
+
+      console.log(headerData);
+
+      return(
+        <div>
+            <a href="/login"><img id="logo" src="/assets/img/eyecon2x.png" alt="face logo"/></a>
+            { DescriptiveDropdown(headerData) }
+            { ChartDropdown(headers) }
+            <div className="navlink"><a href="/logout">Log out</a></div>
+        </div>
+      );
     }
 
+    //default return logout only
     return(
         <div>
             <a href="/login"><img id="logo" src="/assets/img/eyecon2x.png" alt="face logo"/></a>
-            { DescriptiveDropdown(headers) }
-            { ChartDropdown(headers) }
             <div className="navlink"><a href="/logout">Log out</a></div>
         </div>
     );
@@ -77,7 +97,6 @@ const loadDataFromServer = () => {
 
 const loadChart = (header) => {
   sendAjax('GET', '/getRecentData', null, (data) => {
-        
     ReactDOM.render(
         <NumericChart header = {header} data = {data.data[0].data} />, 
         document.querySelector("#chartProperties")
@@ -85,10 +104,19 @@ const loadChart = (header) => {
 });
 }
 
-const loadDescriptive = (header) => {
-  sendAjax('GET', '/getDescriptive', `param=${header}`, (data) => {
+const loadDescriptiveNumeric = (header) => {
+  sendAjax('GET', '/getDescriptiveNumeric', `param=${header}`, (data) => {
     ReactDOM.render(
       <NumericDescriptive header = {header} mean = {data.mean} median = {data.median} mode = {data.mode} range = {data.range} />,
+      document.querySelector("#descriptives")
+    );
+  })
+}
+
+const loadDescriptiveCategorical = (header) => {
+  sendAjax('GET', '/getDescriptiveCategorical', `param=${header}`, (data) => {
+    ReactDOM.render(
+      <CategoricalDescriptive header = {header} counts = {data.counts} percents = {data.percents} />,
       document.querySelector("#descriptives")
     );
   })

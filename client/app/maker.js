@@ -45,21 +45,43 @@ const NumericDescriptive = (props) => {
   return(
     <div id="desc">
       <h3>Descriptive Statistics for {props.header}</h3>
-      <p>Mean: <strong>{props.mean}</strong></p>
-      <p>Median: <strong>{props.median}</strong></p>
-      <p>Mode: <strong>{props.mode}</strong></p>
-      <p>Range: <strong>{props.range[0]} - {props.range[1]}</strong></p>
+      <p>Mean: <strong>{props.mean.toFixed(2)}</strong></p>
+      <p>Median: <strong>{props.median.toFixed(2)}</strong></p>
+      <p>Mode: <strong>{props.mode.toFixed(2)}</strong></p>
+      <p>Range: <strong>{props.range[0].toFixed(2)} - {props.range[1].toFixed(2)}</strong></p>
     </div>
   );
 };
 
 const CategoricalDescriptive = (props) => {
+
+  const keys = Object.keys(props.counts);
+
   return(
     <div id="desc">
       <h3>Descriptive Statistics for {props.header}</h3>
-      {
-        //TODO
-      }
+      <table style={{'textAlign': 'center'}}>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Count</th>
+            <th>Percent</th>
+          </tr>
+        </thead>
+        <tbody>
+        {
+          keys.map((key) => {
+            return(
+              <tr key = {key}>
+                <td>{key}</td>
+                <td>{props.counts[key]}</td>
+                <td>{props.percents[key].toFixed(2)}%</td>
+              </tr>
+            )
+          })
+        }
+        </tbody>
+      </table>
     </div>
   );
 }
