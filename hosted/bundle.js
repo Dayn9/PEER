@@ -87,6 +87,7 @@ var handleLogin = function handleLogin(e) {
 Reference:
 https://www.d3-graph-gallery.com/graph/barplot_horizontal.html
 */
+//shared variables
 var margin = {
   top: 20,
   right: 30,
@@ -96,11 +97,9 @@ var margin = {
 var width = 500;
 var height = 400;
 var svg = d3.select("#chart").append("svg").attr("width", width).attr("height", height);
-var xScale = d3.scaleLinear();
-var yScale = d3.scaleBand().padding(.1);
-var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - margin.bottom, " )"));
-var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)"));
 var chartProperty = '';
+var xAxis = svg.append("g").attr("transform", "translate(0,".concat(height - margin.bottom, " )"));
+var yAxis = svg.append("g").attr("transform", "translate(".concat(margin.left, ",0)")); //Creates a chart of value by index
 
 var NumericChart = function NumericChart(props) {
   var data = props.data;
@@ -109,10 +108,10 @@ var NumericChart = function NumericChart(props) {
   var drawChart = function drawChart(property) {
     chartProperty = property; //store for reload on new
 
-    xScale.domain([0, d3.max(data, function (d) {
+    var xScale = d3.scaleLinear().domain([0, d3.max(data, function (d) {
       return parseFloat(d[property]);
     })]).range([margin.left, width - margin.right]);
-    yScale.range([margin.top, height - margin.bottom]).domain(data.map(function (d, i) {
+    var yScale = d3.scaleBand().padding(.1).range([margin.top, height - margin.bottom]).domain(data.map(function (d, i) {
       return i;
     }));
     svg.selectAll("rect").data(data, function (d, i) {
@@ -131,6 +130,50 @@ var NumericChart = function NumericChart(props) {
         }).attr("width", function (d) {
           return xScale(parseFloat(d[property]) || 0) - xScale(0);
         }).attr("height", yScale.bandwidth());
+      });
+    });
+    xAxis.call(d3.axisBottom(xScale)).selectAll("text").attr("transform", "translate(-10,0)rotate(-45)").style("text-anchor", "end");
+    yAxis.call(d3.axisLeft(yScale));
+  };
+
+  drawChart(chartProperty);
+  return /*#__PURE__*/React.createElement("h3", null, "Chart for ", props.header);
+};
+
+var CategoricalChart = function CategoricalChart(props) {
+  var data = props.counts;
+  var keys = Object.keys(data);
+  chartProperty = props.header;
+
+  var drawChart = function drawChart(property) {
+    chartProperty = property; //store for reload on new
+
+    var xScale = d3.scaleBand().padding(.1).range([margin.left, width - margin.right]).domain(keys.map(function (d, i) {
+      return d;
+    }));
+    var yScale = d3.scaleLinear().domain([0, d3.max(keys, function (d) {
+      return parseFloat(data[d]);
+    })]).range([height - margin.bottom, margin.top]);
+    svg.selectAll("rect").data(keys, function (d, i) {
+      return d;
+    }) //map by key
+    .join(function (enter) {
+      return enter.append("rect").attr("x", function (d) {
+        return xScale(d);
+      }).attr("y", function (d) {
+        return yScale(data[d] || 0);
+      }).attr("width", xScale.bandwidth()).attr("height", function (d) {
+        return yScale(0) - yScale(data[d] || 0);
+      }).attr("fill", "#008b8b");
+    }, function (update) {
+      return update.call(function (update) {
+        return update.transition().duration(500).attr("x", function (d) {
+          return xScale(d);
+        }).attr("y", function (d) {
+          return yScale(data[d] || 0);
+        }).attr("width", xScale.bandwidth()).attr("height", function (d) {
+          return yScale(0) - yScale(data[d] || 0);
+        });
       });
     });
     xAxis.call(d3.axisBottom(xScale)).selectAll("text").attr("transform", "translate(-10,0)rotate(-45)").style("text-anchor", "end");
@@ -224,13 +267,13 @@ var ChartDropdown = function ChartDropdown(headerData) {
     }, "Chart"), /*#__PURE__*/React.createElement("div", {
       className: "dropdown-content"
     }, //create the headers 
-    headerData.map(function (header) {
+    headerData.map(function (d) {
       return /*#__PURE__*/React.createElement("a", {
-        key: header,
+        key: d.header,
         onClick: function onClick() {
-          return loadChart(header);
+          return d.isCategorical ? loadChartCategorical(d.header) : loadChartNumeric(d.header);
         }
-      }, header);
+      }, d.header);
     })));
   }
 };
@@ -241,21 +284,20 @@ var NavigationControls = function NavigationControls(props) {
     var headers = props.headers; //let isCategorical = headers.map(h => isNaN(parseFloat(props.data[0][h])));
 
     var headerData = headers.reduce(function (acc, cur) {
-      console.log(acc);
       acc.push({
+        //header data -->
         header: cur,
         isCategorical: isNaN(parseFloat(props.data[0][cur]))
       });
       return acc;
     }, []);
-    console.log(headerData);
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("a", {
       href: "/login"
     }, /*#__PURE__*/React.createElement("img", {
       id: "logo",
       src: "/assets/img/eyecon2x.png",
       alt: "face logo"
-    })), DescriptiveDropdown(headerData), ChartDropdown(headers), /*#__PURE__*/React.createElement("div", {
+    })), DescriptiveDropdown(headerData), ChartDropdown(headerData), /*#__PURE__*/React.createElement("div", {
       className: "navlink"
     }, /*#__PURE__*/React.createElement("a", {
       href: "/logout"
@@ -292,11 +334,20 @@ var loadDataFromServer = function loadDataFromServer() {
   });
 };
 
-var loadChart = function loadChart(header) {
+var loadChartNumeric = function loadChartNumeric(header) {
   sendAjax('GET', '/getRecentData', null, function (data) {
     ReactDOM.render( /*#__PURE__*/React.createElement(NumericChart, {
       header: header,
       data: data.data[0].data
+    }), document.querySelector("#chartProperties"));
+  });
+};
+
+var loadChartCategorical = function loadChartCategorical(header) {
+  sendAjax('GET', '/getDescriptiveCategorical', "param=".concat(header), function (data) {
+    ReactDOM.render( /*#__PURE__*/React.createElement(CategoricalChart, {
+      header: header,
+      counts: data.counts
     }), document.querySelector("#chartProperties"));
   });
 };

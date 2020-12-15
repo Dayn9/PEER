@@ -71,10 +71,10 @@ const getDescriptiveCategorical = (req, res) => Data.TableModel.findByOwner(
 
     const values = data.map((d) => d[param]); // get an array of the relevant data
     const len = values.length;
-    values.sort(); //alphabetical sort
+    values.sort(); // alphabetical sort
 
     // get the counts
-    counts = values.reduce((acc, cur) => {
+    const counts = values.reduce((acc, cur) => {
       if (!(cur in acc)) {
         acc[cur] = 0;
       }
@@ -82,21 +82,20 @@ const getDescriptiveCategorical = (req, res) => Data.TableModel.findByOwner(
       return acc;
     }, {});
 
-    //get the percentages
-    percents =  values.reduce((acc, cur) => {
+    // get the percentages
+    const percents = values.reduce((acc, cur) => {
       if (!(cur in acc)) {
         acc[cur] = 0;
       }
-      acc[cur] += 1/len;
+      acc[cur] += 1 / len;
       return acc;
     }, {});
-    
+
     return res.json({
       counts, percents,
     });
   },
 );
-  
 
 module.exports = {
   getDescriptiveNumeric,

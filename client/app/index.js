@@ -28,9 +28,11 @@ const ChartDropdown = (headerData) => {
         <div className ="dropdown-content">
           { 
           //create the headers 
-          headerData.map((header) => {
+          headerData.map((d) => {
               return (
-                  <a key = {header} onClick = {() => loadChart(header)}>{header}</a>
+                  <a key = {d.header} onClick = {
+                    () => d.isCategorical ? loadChartCategorical(d.header) : loadChartNumeric(d.header)
+                  }>{d.header}</a>
               );
           })
           }
@@ -47,21 +49,20 @@ const NavigationControls = (props) => {
       let headers = props.headers;
       //let isCategorical = headers.map(h => isNaN(parseFloat(props.data[0][h])));
       let headerData = headers.reduce((acc, cur) => {
-        console.log(acc);
-        acc.push({
+        
+        acc.push({ //header data -->
           header: cur,
           isCategorical: isNaN(parseFloat(props.data[0][cur]))
         });
+
         return acc;
       }, []);
-
-      console.log(headerData);
 
       return(
         <div>
             <a href="/login"><img id="logo" src="/assets/img/eyecon2x.png" alt="face logo"/></a>
             { DescriptiveDropdown(headerData) }
-            { ChartDropdown(headers) }
+            { ChartDropdown(headerData) }
             <div className="navlink"><a href="/logout">Log out</a></div>
         </div>
       );
@@ -95,13 +96,21 @@ const loadDataFromServer = () => {
   });
 }
 
-const loadChart = (header) => {
+const loadChartNumeric = (header) => {
   sendAjax('GET', '/getRecentData', null, (data) => {
     ReactDOM.render(
         <NumericChart header = {header} data = {data.data[0].data} />, 
         document.querySelector("#chartProperties")
     );
-});
+  });
+}
+const loadChartCategorical = (header) => {
+  sendAjax('GET', '/getDescriptiveCategorical', `param=${header}`, (data) => {
+    ReactDOM.render(
+      <CategoricalChart header = {header} counts = {data.counts} />,
+      document.querySelector("#chartProperties")
+    );
+  })
 }
 
 const loadDescriptiveNumeric = (header) => {
